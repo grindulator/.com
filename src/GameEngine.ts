@@ -223,6 +223,7 @@ export class GameEngine {
     this.applyScreenScale();
 
     this.update = this.update.bind(this);
+    this.resumeMusic = this.resumeMusic.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -238,6 +239,7 @@ export class GameEngine {
     document.addEventListener('keyup', this.handleKeyUp);
     document.addEventListener('mousemove', this.handleMouseMove);
     document.addEventListener('mousedown', this.handleMouseDown);
+    document.addEventListener('click', this.resumeMusic);
     document.addEventListener('contextmenu', this.handleContextMenu, true);
     document.addEventListener('dragstart', this.preventNativeDrag, true);
     document.addEventListener('selectstart', this.preventNativeDrag, true);
@@ -312,8 +314,22 @@ export class GameEngine {
     s.shopMusic = music;
   }
 
-  public setWorldMusicVolume(v: number) { this.state.worldMusicVolume = v / 100; if (this.state.currentMusic) this.state.currentMusic.volume = this.state.worldMusicVolume; this.emitState(); }
-  public setShopMusicVolume(v: number) { this.state.shopMusicVolume = v / 100; if (this.state.shopMusic) this.state.shopMusic.volume = this.state.shopMusicVolume; this.emitState(); }
+  public resumeMusic() {
+    const s = this.state;
+    if (!s.gameStarted || s.isPaused || s.isDead) return;
+    if (s.inShop) {
+      if (s.shopMusic && s.shopMusic.paused) {
+        s.shopMusic.play().catch(() => {});
+      }
+    } else {
+      if (s.currentMusic && s.currentMusic.paused) {
+        s.currentMusic.play().catch(() => {});
+      }
+    }
+  }
+
+  public setWorldMusicVolume(v: number) { this.state.worldMusicVolume = v / 100; if (this.state.currentMusic) this.state.currentMusic.volume = this.state.worldMusicVolume; this.resumeMusic(); this.emitState(); }
+  public setShopMusicVolume(v: number) { this.state.shopMusicVolume = v / 100; if (this.state.shopMusic) this.state.shopMusic.volume = this.state.shopMusicVolume; this.resumeMusic(); this.emitState(); }
   public setMusicVolume(v: number) { this.setWorldMusicVolume(v); }
   public setSfxVolume(v: number) { this.state.sfxVolume = v / 100; this.emitState(); }
 
@@ -973,15 +989,29 @@ export class GameEngine {
       box.appendChild(tooltip);
 
       box.addEventListener('mouseenter', () => {
-        box.style.transform = 'scale(1.06)';
-        box.style.borderColor = '#ffffff';
-        box.style.boxShadow = `${6 * s.screenScale}px ${6 * s.screenScale}px 0 #000`;
+        const level = s.enchantmentLevels[enchant.id] || 0;
+        const price = getEnchantmentPrice(enchant, level);
+        const isMaxed = this.isEnchantmentMaxed(enchant.id);
+        const canAfford = !isMaxed && s.coins >= price;
+
+        if (canAfford) {
+          box.style.transform = 'scale(1.06)';
+          box.style.borderColor = '#ffffff';
+          box.style.boxShadow = `${6 * s.screenScale}px ${6 * s.screenScale}px 0 #000`;
+        } else {
+          box.style.borderColor = '#555';
+        }
         tooltip.style.opacity = '1';
         tooltip.style.transform = 'scale(1)';
       });
       box.addEventListener('mouseleave', () => {
+        const level = s.enchantmentLevels[enchant.id] || 0;
+        const price = getEnchantmentPrice(enchant, level);
+        const isMaxed = this.isEnchantmentMaxed(enchant.id);
+        const canAfford = !isMaxed && s.coins >= price;
+
         box.style.transform = 'scale(1)';
-        box.style.borderColor = '#ffcc00';
+        box.style.borderColor = canAfford ? '#ffcc00' : '#555';
         box.style.boxShadow = `${4 * s.screenScale}px ${4 * s.screenScale}px 0 #000`;
         tooltip.style.opacity = '0';
         tooltip.style.transform = 'scale(0.85)';
@@ -1217,10 +1247,10 @@ export class GameEngine {
 
   public skipMission() { const s = this.state; if (!s.devUnlocked) return; this.playSound(SOUNDS.BUTTON_CLICK); s.shopUnlockMissions.forEach(sm => { if (!s.completedMissions.includes(sm.id)) { s.completedMissions.push(sm.id); } }); s.activeMissions = s.activeMissions.filter(m => !s.shopUnlockMissions.some(sm => sm.id === m.id)); s.shopUnlockMissions = []; this.spawnShopEntrance(); }
 
-  public handleKeyDown(e: KeyboardEvent) { const s = this.state; if (!s.gameStarted || s.isDead || s.showDevPassword) return; if (e.key.toLowerCase() === 'p' || e.key === 'Escape') { this.togglePause(); return; } if (s.isPaused) return; s.keys[e.key] = true; if (e.key === ' ') { this.shootBullet(); e.preventDefault(); } }
+  public handleKeyDown(e: KeyboardEvent) { const s = this.state; this.resumeMusic(); if (!s.gameStarted || s.isDead || s.showDevPassword) return; if (e.key.toLowerCase() === 'p' || e.key === 'Escape') { this.togglePause(); return; } if (s.isPaused) return; s.keys[e.key] = true; if (e.key === ' ') { this.shootBullet(); e.preventDefault(); } }
   public handleKeyUp(e: KeyboardEvent) { const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.keys[e.key] = false; }
   public handleMouseMove(e: MouseEvent) { const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.mouseX = e.clientX * s.screenScale; s.mouseY = e.clientY * s.screenScale; }
-  public handleMouseDown(e: MouseEvent) { if (e.button === 2) { e.preventDefault(); e.stopPropagation(); return; } const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.mouseX = e.clientX * s.screenScale; s.mouseY = e.clientY * s.screenScale; const target = e.target as HTMLElement; if (target.closest('button') || target.closest('input') || target.closest('[data-ui]')) return; e.preventDefault(); this.shootBullet(); }
+  public handleMouseDown(e: MouseEvent) { if (e.button === 2) { e.preventDefault(); e.stopPropagation(); return; } this.resumeMusic(); const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.mouseX = e.clientX * s.screenScale; s.mouseY = e.clientY * s.screenScale; const target = e.target as HTMLElement; if (target.closest('button') || target.closest('input') || target.closest('[data-ui]')) return; e.preventDefault(); this.shootBullet(); }
   public handleContextMenu(e: MouseEvent) { e.preventDefault(); e.stopPropagation(); return false; }
   public preventNativeDrag(e: DragEvent) { const target = e.target as HTMLElement; if (target.closest && target.closest('input')) return; e.preventDefault(); }
   public preventBrowserZoom(e: any) { const key = (e.key || '').toLowerCase(); const isZoomKey = e.type === 'keydown' && (e.ctrlKey || e.metaKey) && ['+', '=', '-', '_', '0'].includes(key); const isZoomWheel = e.type === 'wheel' && (e.ctrlKey || e.metaKey); const isGesture = e.type && e.type.startsWith('gesture'); if (isZoomKey || isZoomWheel || isGesture) { e.preventDefault(); e.stopPropagation(); } }
@@ -1660,6 +1690,7 @@ export class GameEngine {
     document.removeEventListener('keyup', this.handleKeyUp);
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mousedown', this.handleMouseDown);
+    document.removeEventListener('click', this.resumeMusic);
     document.removeEventListener('contextmenu', this.handleContextMenu, true);
     document.removeEventListener('dragstart', this.preventNativeDrag, true);
     document.removeEventListener('selectstart', this.preventNativeDrag, true);
