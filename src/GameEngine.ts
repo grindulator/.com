@@ -419,9 +419,8 @@ export class GameEngine {
     const worldMouseX = s.mouseX + s.cameraX, worldMouseY = s.mouseY + s.cameraY;
     const dx = worldMouseX - px, dy = worldMouseY - py; const baseAng = Math.atan2(dy, dx);
     const totalBullets = 1 + (s.multishot * 2); this.triggerMissionEvent('shoot', totalBullets);
-    const totalSpreadArc = Math.min(Math.PI / 1.5, (totalBullets - 1) * (Math.PI / 12));
-    const angleStep = totalBullets > 1 ? totalSpreadArc / (totalBullets - 1) : 0;
-    const startAngle = baseAng - (totalSpreadArc / 2);
+    const angleStep = Math.PI / 12; // 15 degrees, completely equal angles apart for all levels of multishot
+    const startAngle = baseAng - ((totalBullets - 1) * angleStep) / 2;
     const dynamicSpawnSize = (s.fireshot > 0) ? Math.max(s.bulletSize * 1.5, 32) : s.bulletSize;
     for (let i = 0; i < totalBullets; i++) {
       const currentAng = startAngle + (angleStep * i);
@@ -463,11 +462,11 @@ export class GameEngine {
       if (e.name === 'Shooter Mob' && elapsedSec > 90) growthFactor *= 1.5;
       if (e.name === 'Armored Mob') {
         const timeSinceUnlock = (elapsedMs - e.unlock) / 1000;
-        const progress = Math.min(1, Math.max(0, timeSinceUnlock / 120));
-        const rampScale = 0.15 + progress * 0.85;
+        const progress = Math.min(1, Math.max(0, timeSinceUnlock / 180));
+        const rampScale = 0.1 + progress * 2.4; // Starts small (10%) and scales up to 250% over 3 minutes!
         growthFactor *= rampScale;
       }
-      if (e.name === 'Armored Mob' && elapsedSec > 110) growthFactor *= 1.4;
+      if (e.name === 'Armored Mob' && elapsedSec > 200) growthFactor *= 1.3;
       if (e.name === 'Mimic Mob' && elapsedSec > 130) growthFactor *= 1.25;
       const finalWeight = e.weight * growthFactor; totalWeight += finalWeight; return { ...e, finalWeight };
     });
@@ -627,8 +626,9 @@ export class GameEngine {
     this.container.appendChild(el);
     
     const isShooterBullet = enemy.type.isShooter || enemy.type.name === 'Magic Mob';
-    const spinAngle = isShooterBullet ? Math.random() * Math.PI * 2 : undefined;
-    const spinSpeed = isShooterBullet ? (Math.random() > 0.5 ? 1 : -1) * (0.003 + Math.random() * 0.004) : undefined;
+    const isMimicFireshot = enemy.type.isMimic && this.getEnemyFireshot(enemy) > 0;
+    const spinAngle = (isShooterBullet && !isMimicFireshot) ? Math.random() * Math.PI * 2 : undefined;
+    const spinSpeed = (isShooterBullet && !isMimicFireshot) ? (Math.random() > 0.5 ? 1 : -1) * (0.003 + Math.random() * 0.004) : undefined;
 
     this.state.enemyBullets.push({ 
       x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, el, size, angle, 
@@ -646,9 +646,8 @@ export class GameEngine {
 
     const multishot = this.getEnemyMultishot(enemy);
     const totalBullets = 1 + (multishot * 2);
-    const totalSpreadArc = Math.min(Math.PI / 1.5, (totalBullets - 1) * (Math.PI / 12));
-    const angleStep = totalBullets > 1 ? totalSpreadArc / (totalBullets - 1) : 0;
-    const startAngle = baseAng - (totalSpreadArc / 2);
+    const angleStep = Math.PI / 12; // 15 degrees, completely equal angles apart for all levels of multishot
+    const startAngle = baseAng - ((totalBullets - 1) * angleStep) / 2;
     const muzzleDistance = Math.max(18, eSize * 0.45);
     
     // Apply a single random offset to the whole spray so they stay symmetrical
@@ -1433,30 +1432,6 @@ export class GameEngine {
         }
       }
     };
-
-    // Pairwise bounces for player bullets
-    for (let i = 0; i < s.bullets.length; i++) {
-      const b1 = s.bullets[i];
-      const s1 = b1.isFireSplit ? Math.max(s.bulletSize * 1.5, 32) : currentActiveSize;
-      const b1IsPierce = b1.pierceLeft > 0;
-      for (let j = i + 1; j < s.bullets.length; j++) {
-        const b2 = s.bullets[j];
-        const s2 = b2.isFireSplit ? Math.max(s.bulletSize * 1.5, 32) : currentActiveSize;
-        const b2IsPierce = b2.pierceLeft > 0;
-        resolveBulletBounce(b1, b2, s1, s2, b1IsPierce, b2IsPierce);
-      }
-    }
-
-    // Pairwise bounces for enemy bullets
-    for (let i = 0; i < s.enemyBullets.length; i++) {
-      const eb1 = s.enemyBullets[i];
-      const s1 = eb1.size || 20;
-      for (let j = i + 1; j < s.enemyBullets.length; j++) {
-        const eb2 = s.enemyBullets[j];
-        const s2 = eb2.size || 20;
-        resolveBulletBounce(eb1, eb2, s1, s2, false, false);
-      }
-    }
 
     // Cross bounces (player vs enemy bullets)
     for (let i = 0; i < s.bullets.length; i++) {
