@@ -468,7 +468,7 @@ export class GameEngine {
   }
 
   public getEnemyType(): EnemyType {
-    const s = this.state; const elapsedMs = s.activePlaytime * 0.5; const elapsedSec = elapsedMs / 1000;
+    const s = this.state; const elapsedMs = s.activePlaytime * 0.5 * 1.6; const elapsedSec = elapsedMs / 1000;
     const available = ENEMY_TYPES.filter(e => elapsedMs >= e.unlock); let totalWeight = 0;
     const weightedList = available.map(e => {
       let growthFactor = 1; if (elapsedMs > e.unlock) { const timeSinceUnlock = (elapsedMs - e.unlock) / 1000; growthFactor = 1 + (timeSinceUnlock * e.weightGrowth / 100); }
@@ -501,7 +501,7 @@ export class GameEngine {
   }
 
   public getSpawnInterval() {
-    const elapsedSec = (this.state.activePlaytime * 0.5) / 1000; let baseRate;
+    const elapsedSec = (this.state.activePlaytime * 0.5 * 1.6) / 1000; let baseRate;
     if (elapsedSec < 60) { baseRate = 2500 - (elapsedSec / 60) * 500; }
     else if (elapsedSec < 90) { const t = (elapsedSec - 60) / 30; baseRate = 2000 - t * 1200; }
     else if (elapsedSec < 120) { const t = (elapsedSec - 90) / 30; baseRate = 800 - t * 400; }
@@ -858,13 +858,13 @@ export class GameEngine {
   }
 
   public triggerMissionEvent(eventType: string, amount?: number, eventData?: any) {
-    const s = this.state; const amt = amount || 1; const data = eventData || {};
+    const s = this.state; const amt = (amount || 1) * 1.6; const data = eventData || {};
     const currentShopMission = this.getCurrentShopMission();
     const missionsToUpdate = currentShopMission ? [currentShopMission] : s.activeMissions;
     missionsToUpdate.forEach(mission => {
       if (mission.type !== eventType) return; let match = true;
       if (mission.type === 'kill_mob' && mission.targetId !== data.mobType) match = false;
-      if (mission.type === 'bullet_multikill') { if (data.killCount >= mission.target) { mission.progress = mission.target; } else { match = false; } }
+      if (mission.type === 'bullet_multikill') { if (data.killCount * 1.6 >= mission.target) { mission.progress = mission.target; } else { match = false; } }
       if (match && mission.type !== 'bullet_multikill') { mission.progress += amt; }
       if (mission.progress >= mission.target && !s.completedMissions.includes(mission.id)) { s.completedMissions.push(mission.id); if (SHOP_SOUNDS.TASK_COMPLETE) this.playSound(SHOP_SOUNDS.TASK_COMPLETE); }
     });
@@ -1644,7 +1644,9 @@ export class GameEngine {
   }
 
   public _killEnemy(e: Enemy, j: number, source: string, bullet?: Bullet) {
-    const s = this.state; s.coins += e.type.coins;
+    const s = this.state;
+    const coinReward = Math.ceil(e.type.coins * 1.6);
+    s.coins += coinReward;
     if (!s.mobKills) s.mobKills = {};
     s.mobKills[e.type.name] = (s.mobKills[e.type.name] || 0) + 1;
     this.triggerMissionEvent('kill_mob', 1, { mobType: e.type.name }); this.triggerMissionEvent('kill_any', 1); this.triggerMissionEvent('collect_coins', e.type.coins);

@@ -216,7 +216,7 @@ export default function App() {
               transition={{ duration: 0.25, ease: "easeOut" }}
               className="text-[10px] font-bold text-white whitespace-nowrap font-press-start tracking-tight"
             >
-              {uiState.missionProgress.progress}/{uiState.missionProgress.target}
+              {Math.min(uiState.missionProgress.target, Math.round(uiState.missionProgress.progress))}/{uiState.missionProgress.target}
             </motion.span>
           </motion.div>
         )}
@@ -343,7 +343,7 @@ export default function App() {
                       }`}
                     >
                       {sm.done ? "[DONE] " : ""}
-                      {sm.desc} ({sm.progress}/{sm.target})
+                      {sm.desc} ({Math.min(sm.target, Math.round(sm.progress))}/{sm.target})
                     </p>
                   ))
                 )}
