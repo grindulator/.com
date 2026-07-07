@@ -56,6 +56,635 @@ import {
   DEV_PASSWORD
 } from "./types";
 
+const BIOME_TEXTURES: {
+  ground: Record<string, string>;
+  waterAnimation: string[];
+  transitions: Record<string, Record<string, string | string[]>>;
+} = {
+  ground: {
+    grass: "https://codehs.com/uploads/9590b1656ef811030581e96698b0fa7f",
+    forest: "https://codehs.com/uploads/e832f2d8e871b89da8f7bae50c113e17",
+    water: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+    stone: "https://codehs.com/uploads/d7d540bb24f9c949b7b23f93eba3fffd",
+    magma: "https://codehs.com/uploads/f320d99bc77fe9bded47392f548428b4",
+    lava: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+    snow: "https://codehs.com/uploads/a6e6de813631d91f464420f7a2b03dc9",
+    ice: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+    desert: "https://codehs.com/uploads/c9be372e02634c6e24c108fdb9178097"
+  },
+  waterAnimation: [
+    "https://codehs.com/uploads/0766d723461a7b28bd7ffd7900f3a075",
+    "https://codehs.com/uploads/e7e2fdf20794119b67fea720be09bdbb",
+    "https://codehs.com/uploads/d7a469d100e102fb50efff8fc6622523",
+    "https://codehs.com/uploads/48b5e2da04dba64a0fa31ed706403458",
+    "https://codehs.com/uploads/bf8a9d12fe829ea483ca05e9e1c572bc",
+    "https://codehs.com/uploads/fd9e349505c2aac5833387ec4c0a7f14",
+    "https://codehs.com/uploads/16e043aa562cf23ab64527c4776d066c",
+    "https://codehs.com/uploads/97f1fd0b433947322f929da7e74a6946",
+    "https://codehs.com/uploads/102205bb897b7934776e474c631d0be9"
+  ],
+  transitions: {
+    grass_forest: {
+      top: "https://codehs.com/uploads/f4f2b1c2a2bbd867f995b636e65d4e71",
+      right: "https://codehs.com/uploads/e674b576c2e74bd3d7eda94260a5ad07",
+      bottom: "https://codehs.com/uploads/d98c715d133b0d759275537a2996dd22",
+      left: "https://codehs.com/uploads/c259b9e90ef7aaa27eef9dd44d28d742",
+      outerTopLeft: "https://codehs.com/uploads/8c0dc701a25c234329eab1a78cc40216",
+      outerTopRight: "https://codehs.com/uploads/2241de40e2731f25d5847d201bf0489f",
+      outerBottomLeft: "https://codehs.com/uploads/c1331f59f9293b14b6af8df66f537d75",
+      outerBottomRight: "https://codehs.com/uploads/2a8a86d6d7a28882536616acfef7e10b",
+      innerTopLeft: "https://codehs.com/uploads/e6e269f4444fedda36ce56fcd70e7a36",
+      innerTopRight: "https://codehs.com/uploads/8a1e79da00ca9ef0fd145a1ca1b74bc0",
+      innerBottomLeft: "https://codehs.com/uploads/72997b51fcc013b0c2042104f4348728",
+      innerBottomRight: "https://codehs.com/uploads/a66f0409a18750078a885da83a067898"
+    },
+    grass_stone: {
+      top: "https://codehs.com/uploads/53478fd25bd87a061b563f53509dfc50",
+      right: "https://codehs.com/uploads/484a412fa57765c1c6f6904f925f324d",
+      bottom: "https://codehs.com/uploads/5a0cacf9e156b10303ea3ba696bc5bc9",
+      left: "https://codehs.com/uploads/c1bd91f1240a8ec68c63dc986923fda8",
+      outerTopLeft: "https://codehs.com/uploads/2cb07f9d13c54ade1eeefbd4ea9c6180",
+      outerTopRight: "https://codehs.com/uploads/0d55293709c708bfa327d543175b716e",
+      outerBottomLeft: "https://codehs.com/uploads/21d8c5b0d5673960d4eaac6b78d28970",
+      outerBottomRight: "https://codehs.com/uploads/431606eb83c1df7ac4bdf3e6426d0593",
+      innerTopLeft: "https://codehs.com/uploads/9384b213068abf2d9f8e61ebdf0a61ab",
+      innerTopRight: "https://codehs.com/uploads/700e84ced7c83b523707ba0fdfc6d787",
+      innerBottomLeft: "https://codehs.com/uploads/893925fae471d77a827b5c70a63a2ed4",
+      innerBottomRight: "https://codehs.com/uploads/34d067df837273c182f42a9e9cb111b0"
+    },
+    grass_desert: {
+      top: "https://codehs.com/uploads/ebe5f6d679266e881f08dbe7da459e1a",
+      right: "https://codehs.com/uploads/f937dc09845f1dfceba84d579723bd7d",
+      bottom: "https://codehs.com/uploads/bab112de3bfea903a99fe70cd725922a",
+      left: "https://codehs.com/uploads/5a5f615bd6b7f6adf3b3b8053c114e39",
+      outerTopLeft: "https://codehs.com/uploads/7f9c2ebc112e0802428df017abf5d251",
+      outerTopRight: "https://codehs.com/uploads/e8a9b67c8a868b68792be511e92d9b90",
+      outerBottomLeft: "https://codehs.com/uploads/b113f9efd5442f01ad517a545a1caf3a",
+      outerBottomRight: "https://codehs.com/uploads/0a575ad6a2202a2df0ffd06e43bbb024",
+      innerTopLeft: "https://codehs.com/uploads/c40fb7be06460fb432eb19f0b7cc323e",
+      innerTopRight: "https://codehs.com/uploads/7003ed3c6201df490b1c33a6d2978588",
+      innerBottomLeft: "https://codehs.com/uploads/ac2d660390f2c6bc138851f337182415",
+      innerBottomRight: "https://codehs.com/uploads/481b530fea2eb558efce274c2365ce25"
+    },
+    grass_magma: {
+      top: "https://codehs.com/uploads/7da0bc16a6669d9f024f6d779fd2570d",
+      right: "https://codehs.com/uploads/a5c5392953587eb75870be8388c7c321",
+      bottom: "https://codehs.com/uploads/53ecad21c6171dceb08f35119633ee09",
+      left: "https://codehs.com/uploads/8e80f634f34fbc0c8e43024257150c70",
+      outerTopLeft: "https://codehs.com/uploads/1eaaaa3bce56e1cfaa7b8dece822b5a2",
+      outerTopRight: "https://codehs.com/uploads/43d4ff12b77a74feb27250f69e48b4cf",
+      outerBottomLeft: "https://codehs.com/uploads/187e94df1387447903def82e3c20bde1",
+      outerBottomRight: "https://codehs.com/uploads/c4f42a4d3a1910fe6a27f490ece2ca28",
+      innerTopLeft: "https://codehs.com/uploads/ba0f739ae220f9bc01e13f30d82f364b",
+      innerTopRight: "https://codehs.com/uploads/68b37e4473a8f30731ba65f33ac9115e",
+      innerBottomLeft: "https://codehs.com/uploads/2e7c5a9472f7a5b20d021900bb735480",
+      innerBottomRight: "https://codehs.com/uploads/0dc6a3a88bce53d5a050d7eb4fc9c3f8"
+    },
+    grass_snow: {
+      top: "https://codehs.com/uploads/707ed9dcffb0dad86442d3e6828b3157",
+      right: "https://codehs.com/uploads/adc3937d1432578f1e4469792f9cc8e8",
+      bottom: "https://codehs.com/uploads/a815a8b1db9a3f28e39b2090099e000e",
+      left: "https://codehs.com/uploads/15984c4737d148e7939750021dc7b08f",
+      outerTopLeft: "https://codehs.com/uploads/28812a7259429591baea0f84a56856b5",
+      outerTopRight: "https://codehs.com/uploads/b44da0fbc5504ead71d589229503b59e",
+      outerBottomLeft: "https://codehs.com/uploads/97e0f404d7270d58864152d31fe5274e",
+      outerBottomRight: "https://codehs.com/uploads/c3173185d399d75e0b600f441dd1d178",
+      innerTopLeft: "https://codehs.com/uploads/795a662d4edaadb3ab6fa6d85b1f12a0",
+      innerTopRight: "https://codehs.com/uploads/59caed2fec026b253dc6cde7b375a31f",
+      innerBottomLeft: "https://codehs.com/uploads/f1adc735d9e89c8c54b63254277a534b",
+      innerBottomRight: "https://codehs.com/uploads/b334922e120f856cc6bb33e45732bc45"
+    },
+    forest_stone: {
+      top: "https://codehs.com/uploads/982b885a14bda932e9c12c01d3102dae",
+      right: "https://codehs.com/uploads/6862aee28ab945616f9df0d4e4740706",
+      bottom: "https://codehs.com/uploads/519c97f0d7c9e6f854595a10cf861357",
+      left: "https://codehs.com/uploads/72054ed9047d987e412c2132a891379e",
+      outerTopLeft: "https://codehs.com/uploads/6f3df466d298ca4110f5f4f740349cbb",
+      outerTopRight: "https://codehs.com/uploads/f4aef0260b65e08ef5f73e610f9ae549",
+      outerBottomLeft: "https://codehs.com/uploads/48809401906e470bb0dcd133f9dd9067",
+      outerBottomRight: "https://codehs.com/uploads/fcda9897ea6263a283094d424e5cf68f",
+      innerTopLeft: "https://codehs.com/uploads/b9a0a1544b4b84b8e32de36925039642",
+      innerTopRight: "https://codehs.com/uploads/a8ae65c3f5ced8eac584e77ab4c408d1",
+      innerBottomLeft: "https://codehs.com/uploads/72faba2836874d02d39c5f9b1fdb4939",
+      innerBottomRight: "https://codehs.com/uploads/0c3b63a00085bf5c05cd07a2f9c20c31"
+    },
+    forest_desert: {
+      top: "https://codehs.com/uploads/5229a713bbe988c934a6cdc1bdb340cb",
+      right: "https://codehs.com/uploads/c73cf30a0e642fabf08cd24424e8f3fa",
+      bottom: "https://codehs.com/uploads/1d08c9287fc02f65b8a858af55f1d97e",
+      left: "https://codehs.com/uploads/3020721d3884b122949141d7c8a808a7",
+      outerTopLeft: "https://codehs.com/uploads/c10319c4bc47dd029c4e3a90bfc39793",
+      outerTopRight: "https://codehs.com/uploads/27395530b6004a915b0d94ae2214c8b4",
+      outerBottomLeft: "https://codehs.com/uploads/522407d1079b678964e4d5894b90d2b4",
+      outerBottomRight: "https://codehs.com/uploads/8e3bf353efbee773df5a51467ec96c14",
+      innerTopLeft: "https://codehs.com/uploads/9afbb72738ef87dd67e4adb580022ea3",
+      innerTopRight: "https://codehs.com/uploads/60adbaac94440c4ac87a2b8259d7c97d",
+      innerBottomLeft: "https://codehs.com/uploads/a2b048644988eccd8771c342be74edcc",
+      innerBottomRight: "https://codehs.com/uploads/c4a154062502fddebcbd8a0d26e7dc56"
+    },
+    forest_magma: {
+      top: "https://codehs.com/uploads/7277155b71e829755b05e3efd3643dd3",
+      right: "https://codehs.com/uploads/9b8010408cbe7dbd6a65373c9bd0395f",
+      bottom: "https://codehs.com/uploads/930db69369d878bd8e7d0432bb3c66bd",
+      left: "https://codehs.com/uploads/51dc3685faf7d67e8aea95fe21808f85",
+      outerTopLeft: "https://codehs.com/uploads/4b6dac37513f1f339cd6f8cae46ac55b",
+      outerTopRight: "https://codehs.com/uploads/c10c427ea5843bbb2eee213a3e7116b9",
+      outerBottomLeft: "https://codehs.com/uploads/268bcfe716af8cdd5185cccfafd54b16",
+      outerBottomRight: "https://codehs.com/uploads/5e73ae7c707ecc4cc0ff995f7bfaad38",
+      innerTopLeft: "https://codehs.com/uploads/0760557ecca968b9fb09f71588556ee4",
+      innerTopRight: "https://codehs.com/uploads/8c47ca1e5dcb7c62827aed776d547258",
+      innerBottomLeft: "https://codehs.com/uploads/cad2a622cb984023ac8e85003e9d2cff",
+      innerBottomRight: "https://codehs.com/uploads/9a4ad3b916cf8d3031bbc9c3fe33e358"
+    },
+    forest_snow: {
+      top: "https://codehs.com/uploads/5bf7f4f8d63ce814938f4b497e4662bd",
+      right: "https://codehs.com/uploads/e8993e07b0c1575dede027484133fcec",
+      bottom: "https://codehs.com/uploads/8ce4c506897e0bbed985df1319f140c1",
+      left: "https://codehs.com/uploads/26d31983474d3e02ab2504648e11382b",
+      outerTopLeft: "https://codehs.com/uploads/e212fecf7009013448a533b73bc13d29",
+      outerTopRight: "https://codehs.com/uploads/193f2664984043bfa9744cd742087eef",
+      outerBottomLeft: "https://codehs.com/uploads/10d5b3547b3bd709c71ecad76990516e",
+      outerBottomRight: "https://codehs.com/uploads/751c9a9134ecae491d08bd7a4d562aa3",
+      innerTopLeft: "https://codehs.com/uploads/2b7acb9960540f66951b115df28767aa",
+      innerTopRight: "https://codehs.com/uploads/f36f0f8ce8314b067a02a2fe7dfecb10",
+      innerBottomLeft: "https://codehs.com/uploads/414d67e2ef0322375155846646a1be3d",
+      innerBottomRight: "https://codehs.com/uploads/0a9d86cbc467908279eeae0dec438f1b"
+    },
+    stone_desert: {
+      top: "https://codehs.com/uploads/ff3f2bc8c8efe673455fb3b5d141859a",
+      right: "https://codehs.com/uploads/bf6e6994aae0214c74473b99d5362b2a",
+      bottom: "https://codehs.com/uploads/c2ccbc5e6808924b4072f21d5d6186c7",
+      left: "https://codehs.com/uploads/5026677a604648d18e9d0ed3e1a35fdb",
+      outerTopLeft: "https://codehs.com/uploads/c4752532f30b1a37e62cebc0143b158e",
+      outerTopRight: "https://codehs.com/uploads/6cd55e26ba2aa8e8500b304f1deb8e08",
+      outerBottomLeft: "https://codehs.com/uploads/5de505cb80b45b5c8342d17befddac22",
+      outerBottomRight: "https://codehs.com/uploads/3530945dfe5e19da18e9c54a5ebcd340",
+      innerTopLeft: "https://codehs.com/uploads/353be72ad64dd9a9af1218897cebfb2e",
+      innerTopRight: "https://codehs.com/uploads/5c3ef87766a1cf0e1db644cfe7873777",
+      innerBottomLeft: "https://codehs.com/uploads/39dc8cb2dce89c39ae0640ac88b10167",
+      innerBottomRight: "https://codehs.com/uploads/949a681e52e35f8bdfc59d3171b14e50"
+    },
+    stone_magma: {
+      top: "https://codehs.com/uploads/18c8ebe04adb0d65bc7039fa0590e177",
+      right: "https://codehs.com/uploads/ac6a28c2018058d0fd8a9953a542a505",
+      bottom: "https://codehs.com/uploads/669b4230b305d5a3fb456324129fb2ce",
+      left: "https://codehs.com/uploads/36c74859892a87805a30497f2abd9c13",
+      outerTopLeft: "https://codehs.com/uploads/feb64cbd7ca78608441f9e1aa3cf3744",
+      outerTopRight: "https://codehs.com/uploads/1e94a1d49cb711df9c20862c2a147b12",
+      outerBottomLeft: "https://codehs.com/uploads/5772616ed6fe02a46960e91190053dba",
+      outerBottomRight: "https://codehs.com/uploads/6a3751531726255ae169f9f731c8bcd9",
+      innerTopLeft: "https://codehs.com/uploads/32a94d9d1ccf2546cce42b6fda1df46d",
+      innerTopRight: "https://codehs.com/uploads/32a94d9d1ccf2546cce42b6fda1df46d",
+      innerBottomLeft: "https://codehs.com/uploads/d500c93164b985ad38792d0e58705e30",
+      innerBottomRight: "https://codehs.com/uploads/f2c3ced5bcb4cda8e78f551fb886f82a"
+    },
+    stone_snow: {
+      top: "https://codehs.com/uploads/ec9ce1fd86e92454d44c4149c467449d",
+      right: "https://codehs.com/uploads/e858d4f558eff4a4173e2a7470469c98",
+      bottom: "https://codehs.com/uploads/f2ef72a7e85806efba920eb5ec489754",
+      left: "https://codehs.com/uploads/ccbe0cc6e2d7e5dff2b9adda0591dfd6",
+      outerTopLeft: "https://codehs.com/uploads/1e95157392435ed0a403a01922a3bc84",
+      outerTopRight: "https://codehs.com/uploads/51760caa0b44d1dbc18e6f68ebc07e3b",
+      outerBottomLeft: "https://codehs.com/uploads/977eb4ada73957f9db3dfbbf7d270d21",
+      outerBottomRight: "https://codehs.com/uploads/3245c088ce0b9330bd01d6270ab11c74",
+      innerTopLeft: "https://codehs.com/uploads/87f72764d1a3784e0ffbcda1144da120",
+      innerTopRight: "https://codehs.com/uploads/fcb7abe1a9be3f9b6ad63341b0d21ccb",
+      innerBottomLeft: "https://codehs.com/uploads/dae43d5e949eb22a2755abfb262146e1",
+      innerBottomRight: "https://codehs.com/uploads/08f0bebd5b0553ef61d2b667794aab15"
+    },
+    snow_ice: {
+      top: "https://codehs.com/uploads/39cc21f89307629f8aef5642c8a6aaef",
+      right: "https://codehs.com/uploads/465f85c7061016e10b38999473303adf",
+      bottom: "https://codehs.com/uploads/da8138f9e9f9c517f929f2a5fe8ad414",
+      left: "https://codehs.com/uploads/5ca222d298b6248175389c03465b7e18",
+      outerTopLeft: "https://codehs.com/uploads/c776ef2e4ca7d3022cef3278996a1782",
+      outerTopRight: "https://codehs.com/uploads/d5c8be7418106b42c9fc8696b27de777",
+      outerBottomLeft: "https://codehs.com/uploads/1a7dd99b829f5d5bcc5e7641e784b86a",
+      outerBottomRight: "https://codehs.com/uploads/84d653c50744226b1348f0b8d4f18b04",
+      innerTopLeft: "https://codehs.com/uploads/af8f2f5fb0092861e61491a5b8c57fe0",
+      innerTopRight: "https://codehs.com/uploads/d6f1021372a123cff4d2f35f3e60a45b",
+      innerBottomLeft: "https://codehs.com/uploads/ee082f1810ba16b360c514b525d59a41",
+      innerBottomRight: "https://codehs.com/uploads/9aef6113c3a450c116e664422080d772"
+    },
+    magma_lava: {
+      top: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      right: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      bottom: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      left: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      outerTopLeft: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      outerTopRight: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      outerBottomLeft: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      outerBottomRight: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      innerTopLeft: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      innerTopRight: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      innerBottomLeft: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311",
+      innerBottomRight: "https://codehs.com/uploads/b40e7845093c42f37e58111f942f0311"
+    },
+    desert_water: {
+      top: [
+        "https://codehs.com/uploads/f13983be090342dcca255e37da723af9",
+        "https://codehs.com/uploads/1e9e24663c05b571ed6d327df5969333",
+        "https://codehs.com/uploads/72636065f4deb4d7e414369b95fbb52b",
+        "https://codehs.com/uploads/c67e7ee7c395aab13b05ed2c8f86829b",
+        "https://codehs.com/uploads/c67e7ee7c395aab13b05ed2c8f86829b",
+        "https://codehs.com/uploads/9f80cc1a3ddec9b914f2f4ecbdcb9383",
+        "https://codehs.com/uploads/a1975710d699e4e0838f441efb154d65",
+        "https://codehs.com/uploads/c9047559678d05bd46f6c181fc4b3cc3",
+        "https://codehs.com/uploads/08bf2bf7f05eaf37ccf771c2d9c54fa0"
+      ],
+      right: [
+        "https://codehs.com/uploads/6cfd22be8e8183a16caab024ccded7fc",
+        "https://codehs.com/uploads/53c5e6617cb83de555afc9bc90cf7e8e",
+        "https://codehs.com/uploads/bdec6e9a6c635b0dae29a819ca129b42",
+        "https://codehs.com/uploads/2e4a8e13af709314029f0a98f643abe5",
+        "https://codehs.com/uploads/2cc2941128d1c0c191bad03d1a1764e3",
+        "https://codehs.com/uploads/71a2fb3781037b218c97e67c1e927f5f",
+        "https://codehs.com/uploads/e5d7f9fe318dc6250a172248062cc455",
+        "https://codehs.com/uploads/ef66fd9a25471b89a91648e7a0bfc30c",
+        "https://codehs.com/uploads/7a748bf381f3c0129bccfc142df34f99"
+      ],
+      bottom: [
+        "https://codehs.com/uploads/54b19dbac23b8404ccefc85bcbf54d8c",
+        "https://codehs.com/uploads/5c2f7bb62eedf2669acd05dd938fa578",
+        "https://codehs.com/uploads/ac5c7868598a5c3e9500d3f2fc16aea8",
+        "https://codehs.com/uploads/ffcfe405054fa07c79b473264eeac0a7",
+        "https://codehs.com/uploads/757ef93c233d01458ee361f5f302b028",
+        "https://codehs.com/uploads/176f9d74673399dc14b0b8d33d22a3fb",
+        "https://codehs.com/uploads/acecadf2b8533a3ec419a7331e727438",
+        "https://codehs.com/uploads/63326e6d849ed4b05cb9a26858aa100a",
+        "https://codehs.com/uploads/025e73f7283d8a811715453296edec91"
+      ],
+      left: [
+        "https://codehs.com/uploads/0a8f8ae9d90747833a87478df8365976",
+        "https://codehs.com/uploads/7069481c1aa1921b765a485869d0c3e2",
+        "https://codehs.com/uploads/768253970e1b6c9f8559221ff8a331fe",
+        "https://codehs.com/uploads/31ac32c31017b8cb5c9402efcef3ead4",
+        "https://codehs.com/uploads/08924cedd4a1de531ce5d9633f0689f0",
+        "https://codehs.com/uploads/62c9479c05caaaf84f8766a758e9d86f",
+        "https://codehs.com/uploads/ed482cb1e76619ee80fc038f019eb4c8",
+        "https://codehs.com/uploads/2e8a74f2722afd54839a0ea8d928305c",
+        "https://codehs.com/uploads/526ebafe3abe68cf44388ef4a64d23ea"
+      ],
+      outerTopLeft: [
+        "https://codehs.com/uploads/0c7cbe94a28c1b53d47293b5ca35e4bc",
+        "https://codehs.com/uploads/882809752efa3d7bc60c3290ccd7c8d9",
+        "https://codehs.com/uploads/c9206ef8baf57651c1c0f906adf7dbe5",
+        "https://codehs.com/uploads/7bc6b06082323e35ce013d13a3cd1e8c",
+        "https://codehs.com/uploads/94aa8e409498c294d450d0d8e280324c",
+        "https://codehs.com/uploads/11c70a28853eac0b5f46b4513dccf37e",
+        "https://codehs.com/uploads/709769e0831b4e2070fec6fe7a34e83a",
+        "https://codehs.com/uploads/726f5ab99e80826ac4b057b2cb9d077f",
+        "https://codehs.com/uploads/804bc122e5064a830dcceb2741a38093"
+      ],
+      outerTopRight: [
+        "https://codehs.com/uploads/e6e1d244e9b92037ee12c3238cf45da1",
+        "https://codehs.com/uploads/85862de195e984bb126e330b742cc0db",
+        "https://codehs.com/uploads/0f87e9dc565bca1a7b1552c853fc6cae",
+        "https://codehs.com/uploads/485a62692ae328cb9fb1b641cdaf005b",
+        "https://codehs.com/uploads/9433cda339567d7d41864143f8e6f01c",
+        "https://codehs.com/uploads/c7ea9c6f81e9632d34003808839fc563",
+        "https://codehs.com/uploads/5f912f86eccfa50a7a9a5a6a50d1ff92",
+        "https://codehs.com/uploads/e83023879277c494b458ad09e47433bf",
+        "https://codehs.com/uploads/5b3e500261c953dc5934261cbf9f8d4d"
+      ],
+      outerBottomLeft: [
+        "https://codehs.com/uploads/72fae631046d11f12dedf9ea970569a3",
+        "https://codehs.com/uploads/6ae117b3db35bcdb18d4707dd9f5e666",
+        "https://codehs.com/uploads/0a4c8ccdf0740d87be584a32f201e1b2",
+        "https://codehs.com/uploads/69cf07b52ce88a4b680e0ae78424c0bd",
+        "https://codehs.com/uploads/c543c83a246278c8eb59dc2ee08de115",
+        "https://codehs.com/uploads/a9c040fd51093075d85ae175935de6a4",
+        "https://codehs.com/uploads/25b92bae28f11caaa36ec0c9c64894dd",
+        "https://codehs.com/uploads/720b04cd8cee62ea76a1e0b342c39d45",
+        "https://codehs.com/uploads/9e51228563febc6d33f2f6fc0d55cafd"
+      ],
+      outerBottomRight: [
+        "https://codehs.com/uploads/ecf335e578eb9c035679ff0732c9e28f",
+        "https://codehs.com/uploads/6fdfb2109540f3c2bb4cef18adb05e3d",
+        "https://codehs.com/uploads/da54816d5fa786694b7d1e409ac7c738",
+        "https://codehs.com/uploads/4fc2cf17fdd6d19badcedf2a21c99fe3",
+        "https://codehs.com/uploads/2ed3869b57a150651fcbf93d3080c7fb",
+        "https://codehs.com/uploads/d11fd8561792690d8be354c78fe1e386",
+        "https://codehs.com/uploads/88cdf013450446fc70774d1a2dac06b5",
+        "https://codehs.com/uploads/a6241980b60f8e9eb484c183e00d779f",
+        "https://codehs.com/uploads/3f8c8e0e59c82a15e99bd1473663b0af"
+      ],
+      innerTopLeft: [
+        "https://codehs.com/uploads/a0032ed17b4215a586366774389adb49",
+        "https://codehs.com/uploads/565a33021dbef4f5dc8f0a652f8df6f3",
+        "https://codehs.com/uploads/53db3bfddaee29b1fd681924126d776d",
+        "https://codehs.com/uploads/65a57f75440d3f753c5f4478bf9836ea",
+        "https://codehs.com/uploads/e6eb252b8001316199c03a2d16e5f13f",
+        "https://codehs.com/uploads/09bffac1e47bb0af72da387e5fc416d6",
+        "https://codehs.com/uploads/cf0e90fce9b9bda5c60b3f81bfc45792",
+        "https://codehs.com/uploads/8b29954136c902d9f4371eff5df67101",
+        "https://codehs.com/uploads/03eb614ff80b735b0ae23d8922029076"
+      ],
+      innerTopRight: [
+        "https://codehs.com/uploads/9145aa74f9fc59f53c76aaf315bae8a0",
+        "https://codehs.com/uploads/4d109f8fa7da64624beddf05333426aa",
+        "https://codehs.com/uploads/3f6ef679d60043b367c31fbafa1f55e3",
+        "https://codehs.com/uploads/f9a42f9fa4d37ca7131cf2e3732781d7",
+        "https://codehs.com/uploads/344f27bf25ffa643172834484ab52931",
+        "https://codehs.com/uploads/5dd21af72fc9c269da0aba511296cbf1",
+        "https://codehs.com/uploads/15a51e33d425bc760acc26c4376b85da",
+        "https://codehs.com/uploads/344f27bf25ffa643172834484ab52931",
+        "https://codehs.com/uploads/7c3fd36448e3bbf24cf41829111f4e50"
+      ],
+      innerBottomLeft: [
+        "https://codehs.com/uploads/4997d798dc301d5ccec5cd2fdefe6258",
+        "https://codehs.com/uploads/1402ccc352a0e0cc304983cff0fc3c87",
+        "https://codehs.com/uploads/26a47216fd578944d7aaa999402cdffc",
+        "https://codehs.com/uploads/b3637c4038d58546d1b01f0bef86d8d2",
+        "https://codehs.com/uploads/498aa951b06490855d7e9741fe8d9a97",
+        "https://codehs.com/uploads/0c5b42e53ef52053bd1cd9b1967a091a",
+        "https://codehs.com/uploads/7194fc06c9627236a0a1efba617bc94e",
+        "https://codehs.com/uploads/8a8952e44a6b3976d65596cbb1a7a9c8",
+        "https://codehs.com/uploads/fbacc0c6158a327f5649848904226d99"
+      ],
+      innerBottomRight: [
+        "https://codehs.com/uploads/d0f5551b648c0185e9f51d70b4a47e61",
+        "https://codehs.com/uploads/4421f06e38f21de4f05461849ee284ab",
+        "https://codehs.com/uploads/40eb4ae2f4af1e65169f87f129ed251d",
+        "https://codehs.com/uploads/515ac5c042e9416f6c9f59f8032a1343",
+        "https://codehs.com/uploads/7116457dbc2ffa02b8ce0f5bd6b7d3a2",
+        "https://codehs.com/uploads/57a3f79758067f0706616349be67de02",
+        "https://codehs.com/uploads/207b1e786e26d7f6b6ed97c3b8b45778",
+        "https://codehs.com/uploads/44fb9231d969b0406cbbbd005501b36b",
+        "https://codehs.com/uploads/e3803651c0f9e9c50b2f5dcc097c9874"
+      ]
+    },
+    grass_water: {
+      top: [
+        "https://codehs.com/uploads/ee19b844215313a361ee1339eb6a44c5",
+        "https://codehs.com/uploads/f12044f61b12416d36c3e019eb1f3ab9",
+        "https://codehs.com/uploads/051f13ba696cba5d3721976d76dc719c",
+        "https://codehs.com/uploads/86983ab6f18325468fddc1d8c29c0ce9",
+        "https://codehs.com/uploads/dae0e7612b2b0c72ac708ca1b934f389",
+        "https://codehs.com/uploads/a7a0bad723cc2b0f197648d734ce8f85",
+        "https://codehs.com/uploads/6bd9fa01f2a85f8ef0a935a2fe2f0a84",
+        "https://codehs.com/uploads/54fdfad37dd75327066a7cf46635fb23",
+        "https://codehs.com/uploads/fefb114ad9f97b4171b622562b08f706"
+      ],
+      right: [
+        "https://codehs.com/uploads/d8fec8f118e5d48dc333e4e1fe50ffc7",
+        "https://codehs.com/uploads/2a49f627a6eec80ab40ebff41a6912a0",
+        "https://codehs.com/uploads/a32a289f6eabada7284e4696759183c6",
+        "https://codehs.com/uploads/c794bbdc06ceccbae7768802f2c39f84",
+        "https://codehs.com/uploads/765353221b727d018aaafdc41935d738",
+        "https://codehs.com/uploads/22c365d5a61e663ac6c6e465c065e59f",
+        "https://codehs.com/uploads/c27b4315013d257f94bb4cdc1fa29678",
+        "https://codehs.com/uploads/cbc1664a4a5cb62683d60d0231434eeb",
+        "https://codehs.com/uploads/be146b62f8a98898b19a7f42f4e34c2e"
+      ],
+      bottom: [
+        "https://codehs.com/uploads/2ba3bec500388ae6755c4e8928a6c576",
+        "https://codehs.com/uploads/9ae714770bde1b0abc730767a297be94",
+        "https://codehs.com/uploads/9e9913a09f1ad92d5a6a85b313fb59fb",
+        "https://codehs.com/uploads/0cc92941829b2ba3e28c943f58f44db5",
+        "https://codehs.com/uploads/1081f99fa8449363e2fbfd4774e3dfbb",
+        "https://codehs.com/uploads/75b8fc6306032fd902d1ea35cf5a4529",
+        "https://codehs.com/uploads/82ffbd5ffea540a4709593a2dbc3562d",
+        "https://codehs.com/uploads/37233acd31d1e97e672ea08368d0f74d",
+        "https://codehs.com/uploads/1776c04d497bd4d2b4d137c0adcbdf95"
+      ],
+      left: [
+        "https://codehs.com/uploads/d142090a88077ec6905206fe6d1b3455",
+        "https://codehs.com/uploads/3ffbf2f755c96959a290c288a8e4f963",
+        "https://codehs.com/uploads/213456310c6f24a04822512ffbc31856",
+        "https://codehs.com/uploads/618dc19914235661692852c55c931ec6",
+        "https://codehs.com/uploads/fb5a2011e4e60d1c43dc72f12ce9aae3",
+        "https://codehs.com/uploads/65c36743ec0293eee5fc5b7d92332473",
+        "https://codehs.com/uploads/bdf861428343194ab02923020684728b",
+        "https://codehs.com/uploads/c3209a891b41824da12b8856dcab985b",
+        "https://codehs.com/uploads/fa4895db1e108d568bb43353255941fd"
+      ],
+      outerTopLeft: [
+        "https://codehs.com/uploads/5b0faff5018da6d74e29d9ccd026886a",
+        "https://codehs.com/uploads/116be5ff3745471ae8b90e1be72a221a",
+        "https://codehs.com/uploads/38b2524621f562bf831e97e3e21e6075",
+        "https://codehs.com/uploads/83a0fb64bf3fb068d5481353baa5caa3",
+        "https://codehs.com/uploads/bb0edd9c2a1cff244db26dc4e65cfdea",
+        "https://codehs.com/uploads/071d89b6b422707d4e5f507953e0c168",
+        "https://codehs.com/uploads/6aa3b93986c35b0557bc6078cc5c5d78",
+        "https://codehs.com/uploads/e19e769046245bbb5ad46bf6b8bdffb5",
+        "https://codehs.com/uploads/f141af29c22f398afe360e3552dddaef"
+      ],
+      outerTopRight: [
+        "https://codehs.com/uploads/1ee050a7ebfd2235e5257eb08cd05d46",
+        "https://codehs.com/uploads/f459adb51aebb80c823e9569c642de54",
+        "https://codehs.com/uploads/02f9a28fd6fba908584b9c46015a0f16",
+        "https://codehs.com/uploads/1f804549ac83e822332df46171e57587",
+        "https://codehs.com/uploads/774ca1bc2345eebfe13ee14ea530c723",
+        "https://codehs.com/uploads/9d7fc8b67bbd6f93e087c03f88fe0076",
+        "https://codehs.com/uploads/7db65cb7d23860603b7181da2dd7dbb6",
+        "https://codehs.com/uploads/9eca86bed64019b798e89113205e3990",
+        "https://codehs.com/uploads/614fdea31ac44a8414ff6821d5f4be13"
+      ],
+      outerBottomLeft: [
+        "https://codehs.com/uploads/8b34110d4b1c7638022c8a679074c003",
+        "https://codehs.com/uploads/e403254fc9689a8dd532b2ab11a3e446",
+        "https://codehs.com/uploads/12132975704869286e84af233bd5928f",
+        "https://codehs.com/uploads/8ca21b182e6a6c4f7919af6915314633",
+        "https://codehs.com/uploads/f1528b2fd083a51c7e51d1718df87630",
+        "https://codehs.com/uploads/03e91a9b7d4293748dfa2fbf8a77170b",
+        "https://codehs.com/uploads/dfa0e8c21d346a2b9009b654f82e9e0c",
+        "https://codehs.com/uploads/29f7ee2e6570bc1fdad6c1af5ab8b517",
+        "https://codehs.com/uploads/fc96e788f0b5242ce1b6adc0bd523955"
+      ],
+      outerBottomRight: [
+        "https://codehs.com/uploads/9a91bff9dced3a48cc58559e843aac4c",
+        "https://codehs.com/uploads/08b5e4c7b6a6b932a69902a1b8eda403",
+        "https://codehs.com/uploads/f269a10d2dd40862d005ae49edaf4294",
+        "https://codehs.com/uploads/c6e24567789dc354a3e67178b1635e7e",
+        "https://codehs.com/uploads/4a482d49879715a65e35bcb8cf5e6243",
+        "https://codehs.com/uploads/0c42a798c407898cf468c703a4be53d6",
+        "https://codehs.com/uploads/8ada748418821aeb2f19a496acc93218",
+        "https://codehs.com/uploads/38b0c160c8d09fce7374b043bdf4e0ca",
+        "https://codehs.com/uploads/4a708be5353a35dc9c41ad195bfd8f75"
+      ],
+      innerTopLeft: [
+        "https://codehs.com/uploads/1574dae9d03a924bbb092551a4091de4",
+        "https://codehs.com/uploads/27ed8566a0359c73ab291ce44992dc15",
+        "https://codehs.com/uploads/c8ea4b43e46899954ce853ac471dcc52",
+        "https://codehs.com/uploads/7df730b508a6e68c4cb4e1c6fcf7d85a",
+        "https://codehs.com/uploads/61d8fbc89d782d02a5056aad22588a0f",
+        "https://codehs.com/uploads/594d9c7bdcb05c07ed21d57fad3f152a",
+        "https://codehs.com/uploads/5c7cffe7523791abbb5d4a39098a4474",
+        "https://codehs.com/uploads/23727eb90fc63abfa8082d664033793e",
+        "https://codehs.com/uploads/004fa4d6cb63447756fdf26e82cc464d"
+      ],
+      innerTopRight: [
+        "https://codehs.com/uploads/d3039ffdc0ba3324d49460321d287972",
+        "https://codehs.com/uploads/35f1af34ec27c4ca4b936a9e8bb0a924",
+        "https://codehs.com/uploads/2a14e26f9e0ab00487ef3f6eddb799a6",
+        "https://codehs.com/uploads/49ce8de8bcb3819869915960cb7c979c",
+        "https://codehs.com/uploads/ccabd2adffeb192217311d62683af863",
+        "https://codehs.com/uploads/9627ab85eb16371827eb758199003406",
+        "https://codehs.com/uploads/4410fde59cbb2836b340d77743d16722",
+        "https://codehs.com/uploads/559a94da32c2d57bceeb73633e070997",
+        "https://codehs.com/uploads/90357ec315d2057aef7acda398933015"
+      ],
+      innerBottomLeft: [
+        "https://codehs.com/uploads/a4e121428d518d05927a45fc66f142d3",
+        "https://codehs.com/uploads/a27804ea5f0ae512d51dee84d7cd40fc",
+        "https://codehs.com/uploads/fea1d85cc613520ce77dcee16c042f35",
+        "https://codehs.com/uploads/e0ef00c325daba1d1b2fd1e8d1bfc044",
+        "https://codehs.com/uploads/37ee6adfda5ae4fe01a62d7e5544fc6f",
+        "https://codehs.com/uploads/3d0d4959d7b6b6c0aa20a8603393755e",
+        "https://codehs.com/uploads/447b00a42ee315a466333186f0445728",
+        "https://codehs.com/uploads/22899a64a4409d0a4e3d499ecfec735a",
+        "https://codehs.com/uploads/3c9e58fad949bd4d38998bcb2d8d9f0e"
+      ],
+      innerBottomRight: [
+        "https://codehs.com/uploads/125c2891f663059e5c0b2bdb0684d009",
+        "https://codehs.com/uploads/473243d4e4191b4725eb61461db1601f",
+        "https://codehs.com/uploads/a4682e0d7c6b28d65fec63e4b5616f14",
+        "https://codehs.com/uploads/f4d2a9b324731c4157d6da170428c5b7",
+        "https://codehs.com/uploads/41bf79a7b0a10045748c6b75cc996f1e",
+        "https://codehs.com/uploads/2992c8283e8390afd6c7af649f2ed2ba",
+        "https://codehs.com/uploads/404c95cca03676cd4b360f8157479c2b",
+        "https://codehs.com/uploads/a20b2b76fde298b78f332f37244ba610",
+        "https://codehs.com/uploads/ffe23191e12cd185841978133662b8ec"
+      ]
+    },
+    forest_water: {
+      top: [
+        "https://codehs.com/uploads/7fc7f39da4aa127ecc84d14a040587a0",
+        "https://codehs.com/uploads/1b20f27a2aa86388590d9cd7413a9f46",
+        "https://codehs.com/uploads/3950e22304b9b4a2e6bd0596b0480619",
+        "https://codehs.com/uploads/599d16092543ad6c97a82b70dcdc3bf8",
+        "https://codehs.com/uploads/95362b631c524d96a2342ed847f6e899",
+        "https://codehs.com/uploads/801ceed523ace107097315aa8a6f5533",
+        "https://codehs.com/uploads/53e8dc35fc575f0cf79f09d0a8338c6e",
+        "https://codehs.com/uploads/1fde4c01180680d9f90beea69d04e277",
+        "https://codehs.com/uploads/018d13c0cff4d8cb1ed41140c07cd307"
+      ],
+      right: [
+        "https://codehs.com/uploads/01b455228aae7e6325c2eb28998f6d62",
+        "https://codehs.com/uploads/e436fe201f67dc6e8ce4348ce546fd12",
+        "https://codehs.com/uploads/341754b00dae41ff253c38a777928cd5",
+        "https://codehs.com/uploads/0ce055cb09ebf3994600f3619b7bea33",
+        "https://codehs.com/uploads/b71d9464c876f2d826c47650b7a6ea4c",
+        "https://codehs.com/uploads/917a81ab1ff7d6097ac0ccf077098d58",
+        "https://codehs.com/uploads/d9f02baef21f3fcf2e1197dbd76c940e",
+        "https://codehs.com/uploads/82568139bffe664e4dde8c5cdbe6e430",
+        "https://codehs.com/uploads/cd8947738736e94b744eda7c95157f94"
+      ],
+      bottom: [
+        "https://codehs.com/uploads/67bf7d0f64216fccfb66d887caf1aab5",
+        "https://codehs.com/uploads/5cfc91dec6612eaf62e265183426daa8",
+        "https://codehs.com/uploads/971fc5390fbe7f53eba87dde98957e82",
+        "https://codehs.com/uploads/2638b1bcceea80a7ee0237894b15c3e4",
+        "https://codehs.com/uploads/70828bfe599cc1415c53e3b503ff61d2",
+        "https://codehs.com/uploads/d36bf990eb7ca4999a832644a4b3f8e8",
+        "https://codehs.com/uploads/94318676df2113f6287293a5fa52be7b",
+        "https://codehs.com/uploads/13edb5893057a0643a6b89e3cc696ce0",
+        "https://codehs.com/uploads/5e6364c4b0270070d1b35194cfe85f6a"
+      ],
+      left: [
+        "https://codehs.com/uploads/8bb9e00a949b41e1f98beffd4f6f321e",
+        "https://codehs.com/uploads/08d5fabd38e3f421d7b4a570e6e40a2e",
+        "https://codehs.com/uploads/114aa670afa31a8e5d52ab3fa3df5440",
+        "https://codehs.com/uploads/7de197e47fd78f2378a62383ab2d2738",
+        "https://codehs.com/uploads/e7d27e852ed6ceb9724cea0cadc453b0",
+        "https://codehs.com/uploads/55e1479cc7cf0c17dad620a708b9c49b",
+        "https://codehs.com/uploads/67f08b790f30263d89de4ea0d7e631f7",
+        "https://codehs.com/uploads/aa157f87b7af227443d983d9f85dfed5",
+        "https://codehs.com/uploads/1fdb66f989d2a91e3a515091a4f39703"
+      ],
+      outerTopLeft: [
+        "https://codehs.com/uploads/2b3fed769b686c6d1cfd776d631bc81d",
+        "https://codehs.com/uploads/1ba4fbfb7422253d70fdd0158ae5a307",
+        "https://codehs.com/uploads/ced27f13e47a0cac9fb58c448c799591",
+        "https://codehs.com/uploads/6a7ba69a6bcc0ea6141e46aad1bdf1ec",
+        "https://codehs.com/uploads/a80e4bf6118b388c4db26e14aee4752a",
+        "https://codehs.com/uploads/38ba0e9a58d1bd44128f21f0d4510afd",
+        "https://codehs.com/uploads/d8b93e7ae0a960f75f8dc12b709c30d9",
+        "https://codehs.com/uploads/2bd07e881ea31ffc2a67817da843d80a",
+        "https://codehs.com/uploads/a7f645324fa79dc7bb325c6da9c6518f"
+      ],
+      outerTopRight: [
+        "https://codehs.com/uploads/db21b2cff5e64a78606c650a27f19f89",
+        "https://codehs.com/uploads/66a0f74e83c24b19a08e28333b3808d9",
+        "https://codehs.com/uploads/cb5596203b42e3cf230c42875eaba212",
+        "https://codehs.com/uploads/fe55ae72c35a38a9c91ea76068a32ec4",
+        "https://codehs.com/uploads/ec678f498f245a86ccf0af30d463fde9",
+        "https://codehs.com/uploads/00df6f2381f2e4e3b4c3c46d6f0e559e",
+        "https://codehs.com/uploads/3a1cc3a3149205907d93a1f1073fc819",
+        "https://codehs.com/uploads/1a2372240d8ab5918c8670c1a6821c01",
+        "https://codehs.com/uploads/d86bf64a589e4d05856cb41c66766f4d"
+      ],
+      outerBottomLeft: [
+        "https://codehs.com/uploads/3db16cba46022b42ecf9c0396df5f2ee",
+        "https://codehs.com/uploads/5944edd02ce656aa5d08b7030cb69a16",
+        "https://codehs.com/uploads/f4235c96a01b2ea07807218dd58be842",
+        "https://codehs.com/uploads/8bda5a559ba4ea813f5c18c958cee864",
+        "https://codehs.com/uploads/5f095d28f1eb66938f4d9e998fff5901",
+        "https://codehs.com/uploads/61d852f24d9cbf7685273a1b13d8ea44",
+        "https://codehs.com/uploads/72bdffba59c6e1cd53ecbf80fd7ff1ec",
+        "https://codehs.com/uploads/d43c3e468a3af37a4153be83451a92c8",
+        "https://codehs.com/uploads/d43c3e468a3af37a4153be83451a92c8"
+      ],
+      outerBottomRight: [
+        "https://codehs.com/uploads/015df493cbf47e329d623f97838de9d0",
+        "https://codehs.com/uploads/4aa1f409510d476c3b58466ebbc9ac10",
+        "https://codehs.com/uploads/76355f57315244ca752ffde89a05dabd",
+        "https://codehs.com/uploads/45f28264073ef318907b17f2e02ccb23",
+        "https://codehs.com/uploads/cb2bf9b6a91eb7cd893af5a5b4ec3aba",
+        "https://codehs.com/uploads/e8946943e648d4d4c9a4ec3fd53bb240",
+        "https://codehs.com/uploads/df3db07a8e2e6d1135bda03f5cc4992f",
+        "https://codehs.com/uploads/73f9112ea50719ef7e77e253116388cf",
+        "https://codehs.com/uploads/51b371090f5bbdb275dd3d7e5957a1e7"
+      ],
+      innerTopLeft: [
+        "https://codehs.com/uploads/8e0a9aecadcc1c28361a7c12373169ca",
+        "https://codehs.com/uploads/513ab6a34ac2e2743fce925ac4d2c443",
+        "https://codehs.com/uploads/ecf0541b5fad1220f9aed7d52be74713",
+        "https://codehs.com/uploads/5fd7828bde2a8109d212d333f1fc79bf",
+        "https://codehs.com/uploads/84c881f4c2095f4f90efa1cf8f343302",
+        "https://codehs.com/uploads/a9c833ae08e2c73e6e5efcbd5110a2e8",
+        "https://codehs.com/uploads/f3591bb77272adf8b7902477b4cddb8e",
+        "https://codehs.com/uploads/418288853455d620d0d15b55dda8d881",
+        "https://codehs.com/uploads/5c7ef6d0834f81e88447c7f81ba5b5fb"
+      ],
+      innerTopRight: [
+        "https://codehs.com/uploads/4b5fb4efefffe0220bdbfe4695798c42",
+        "https://codehs.com/uploads/59bca21b586c797097b6bd900a9f4710",
+        "https://codehs.com/uploads/a3cc287455fd086c699a41d697209408",
+        "https://codehs.com/uploads/f34bffb62a343f27a49acc7f10cbad1b",
+        "https://codehs.com/uploads/7ddad543b28158d967698aec050cd85c",
+        "https://codehs.com/uploads/98aae3dc339ac2949b0b7e7a7afe38f5",
+        "https://codehs.com/uploads/db4d41bb23d25c140965ad1d060d8544",
+        "https://codehs.com/uploads/09f330731d54de13a02b1eab7fa72791",
+        "https://codehs.com/uploads/3314f59935a871e953aeda897b38097f"
+      ],
+      innerBottomLeft: [
+        "https://codehs.com/uploads/210d78d77b5b779cf4e42e73439a664a",
+        "https://codehs.com/uploads/dbb06e4b0966a7596919f4bdb5c22a7c",
+        "https://codehs.com/uploads/14c25691c331ef0af718f8c4c30e2c32",
+        "https://codehs.com/uploads/caa811f8bf94cd88bde74803f39b14e6",
+        "https://codehs.com/uploads/8480b3f23342212eb6541abb965e78de",
+        "https://codehs.com/uploads/4dc83b9bed78d6135784b49d21e7d4db",
+        "https://codehs.com/uploads/ccbde2ed1d6c3ed3e04abb589398da0a",
+        "https://codehs.com/uploads/24f174666e14dd90f029045e28566b1b",
+        "https://codehs.com/uploads/8cc48c433cadac8161c6ef47105de6b2"
+      ],
+      innerBottomRight: [
+        "https://codehs.com/uploads/7e2e6ed800cc650c0fc9ac6069c91046",
+        "https://codehs.com/uploads/0aa617485c5c9722eb44005d7430f9f6",
+        "https://codehs.com/uploads/1c7b7e92d68279c9055decf5245f90a0",
+        "https://codehs.com/uploads/b1b49475f5bddb1559e0d40a8af443a2",
+        "https://codehs.com/uploads/186d042d8ed6606a82d7836d838a9225",
+        "https://codehs.com/uploads/f72166d74c0add7f8f4fdc4cde42ab4c",
+        "https://codehs.com/uploads/0a3625a975ffc92efe62313d4ea94875",
+        "https://codehs.com/uploads/ce4646f6b15b8d02f1121e7f404fe87e",
+        "https://codehs.com/uploads/324afca34d38ad6f9fce29619064a0f6"
+      ]
+    }
+  }
+};
+
 export class GameEngine {
   public container: HTMLDivElement;
   public onStateChange: (state: GameState) => void;
@@ -73,6 +702,19 @@ export class GameEngine {
   private _doorFrameCache: HTMLImageElement[];
   private _explosionFrameCache: HTMLImageElement[];
   private _multishotFireFrameCache: HTMLImageElement[];
+
+  public bgCanvas: HTMLCanvasElement | null = null;
+  public bgCtx: CanvasRenderingContext2D | null = null;
+  public biomeGrid: string[][] = [];
+  public gridCols = 120;
+  public gridRows = 120;
+  public tileSize = 64;
+  private textureCache: Record<string, HTMLImageElement> = {};
+  private biomeSeedT = Math.random() * 10000;
+  private biomeSeedM = Math.random() * 10000;
+  private biomeSeedL = Math.random() * 10000;
+  private biomeCache: Map<string, string> = new Map();
+  private rawBiomeCache: Map<string, string> = new Map();
 
   public state: {
     x: number;
@@ -160,6 +802,7 @@ export class GameEngine {
     shopMusicVolume: number;
     sfxVolume: number;
     maxParticles: number;
+    waterAnimOffset: number;
     screenScale: number;
     gameStarted: boolean;
     isDead: boolean;
@@ -178,6 +821,12 @@ export class GameEngine {
   constructor(container: HTMLDivElement, onStateChange: (state: GameState) => void) {
     this.container = container;
     this.onStateChange = onStateChange;
+
+    this.bgCanvas = document.createElement('canvas');
+    this.bgCanvas.id = 'biome-background';
+    this.bgCanvas.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;z-index:-1;image-rendering:pixelated;';
+    this.container.appendChild(this.bgCanvas);
+    this.bgCtx = this.bgCanvas.getContext('2d');
 
     this.state = {
       x: 900, y: 400, vx: 0, vy: 0, mouseX: 0, mouseY: 0, keys: {},
@@ -207,6 +856,7 @@ export class GameEngine {
       enchantmentLevels: {}, shopOverlayVisible: false, shopMusic: null,
       lastSpawnTime: 0, nextSpawnInterval: 2500,
       currentMusic: null, worldMusicVolume: 0.3, shopMusicVolume: 0.3, sfxVolume: 0.5, maxParticles: DEFAULTS.MAX_PARTICLES,
+      waterAnimOffset: parseInt(localStorage.getItem('waterAnimOffset') || '0', 10),
       screenScale: 1,
       gameStarted: false, isDead: false, isPaused: false,
       devUnlocked: false, showDevPassword: false,
@@ -267,6 +917,7 @@ export class GameEngine {
     document.addEventListener('gestureend', this.preventBrowserZoom, true);
     window.addEventListener('blur', this.handleBlur);
     window.addEventListener('resize', this.handleResize);
+    this.preloadAllTextures();
     this.emitState();
   }
 
@@ -277,6 +928,7 @@ export class GameEngine {
       devUnlocked: s.devUnlocked, showDevPassword: s.showDevPassword,
       lives: s.lives, maxLives: s.maxLives, coins: s.coins,
       worldMusicVolume: Math.round(s.worldMusicVolume * 100), shopMusicVolume: Math.round(s.shopMusicVolume * 100), sfxVolume: Math.round(s.sfxVolume * 100), maxParticles: s.maxParticles,
+      waterAnimOffset: s.waterAnimOffset,
       deathMessage: s.deathMessage, scoreMessage: s.scoreMessage,
       hitFlash: s.hitFlash, showDeathScreen: s.showDeathScreen, shopFade: s.shopFade,
       inShop: s.inShop, shopOverlayVisible: s.shopOverlayVisible,
@@ -349,6 +1001,11 @@ export class GameEngine {
   public setShopMusicVolume(v: number) { this.state.shopMusicVolume = v / 100; if (this.state.shopMusic) this.state.shopMusic.volume = this.state.shopMusicVolume; this.resumeMusic(); this.emitState(); }
   public setMusicVolume(v: number) { this.setWorldMusicVolume(v); }
   public setSfxVolume(v: number) { this.state.sfxVolume = v / 100; this.emitState(); }
+  public setWaterAnimOffset(v: number) {
+    this.state.waterAnimOffset = v;
+    localStorage.setItem('waterAnimOffset', v.toString());
+    this.emitState();
+  }
   public setMaxParticles(v: number) {
     this.state.maxParticles = v;
     if (v === 0) {
@@ -360,19 +1017,8 @@ export class GameEngine {
 
   public updatePlayerSprite() {
     const s = this.state;
-    if (s.multishot === 1) {
-      if (s.fireshot > 0) {
-        const frames = PLAYER_MULTISHOT_FIRE_ANIMS[1];
-        this.playerEl.src = frames[s.playerAnimFrame % frames.length];
-      } else {
-        this.playerEl.src = PLAYER_SPRITES[1];
-      }
-      this.playerEl.style.width = '69px';
-      this.playerEl.style.height = '72px';
-      s.centerOffsetX = 34.5;
-      s.centerOffsetY = 36;
-    } else if (s.multishot > 1) {
-      const level = Math.min(s.multishot, 3);
+    if (s.multishot >= 1) {
+      const level = Math.min(Math.floor(s.multishot), 3);
       if (s.fireshot > 0) {
         const frames = PLAYER_MULTISHOT_FIRE_ANIMS[level] || PLAYER_MULTISHOT_FIRE_ANIMS[2];
         this.playerEl.src = frames[s.playerAnimFrame % frames.length];
@@ -441,8 +1087,14 @@ export class GameEngine {
     this.container.style.height = (window.innerHeight * scale) + 'px';
     this.container.style.left = (-(scale - 1) * window.innerWidth / 2) + 'px';
     this.container.style.top = (-(scale - 1) * window.innerHeight / 2) + 'px';
+    this.container.style.right = 'auto';
+    this.container.style.bottom = 'auto';
     this.container.style.transform = `scale(${1 / scale})`;
     this.container.style.transformOrigin = 'center center';
+    if (this.bgCanvas) {
+      this.bgCanvas.width = this.getSpawnScreenWidth();
+      this.bgCanvas.height = this.getSpawnScreenHeight();
+    }
   }
 
   public isOnScreen(x: number, y: number, padding = 80) {
@@ -489,7 +1141,7 @@ export class GameEngine {
       const sx = px + Math.cos(currentAng) * muzzleDistance, sy = py + Math.sin(currentAng) * muzzleDistance;
       const el = document.createElement('img'); el.src = (s.fireshot > 0) ? BULLET_ANIMS[0] : DEFAULT_BULLET_SPRITE;
       el.style.cssText = `width:${dynamicSpawnSize}px;height:${dynamicSpawnSize}px;object-fit:contain;position:absolute;transform-origin:center;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:9998;`;
-      el.style.left = (sx - (dynamicSpawnSize / 2) - s.cameraX) + 'px'; el.style.top = (sy - (dynamicSpawnSize / 2) - s.cameraY) + 'px'; el.style.transform = `rotate(${currentAng}rad)`;
+      el.style.left = Math.round(sx - (dynamicSpawnSize / 2) - s.cameraX) + 'px'; el.style.top = Math.round(sy - (dynamicSpawnSize / 2) - s.cameraY) + 'px'; el.style.transform = `rotate(${currentAng}rad)`;
       this.container.appendChild(el);
       s.bullets.push({ id: Math.random().toString(36).substr(2, 9), x: sx, y: sy, vx: Math.cos(currentAng) * s.bulletSpeed, vy: Math.sin(currentAng) * s.bulletSpeed, el, angle: currentAng, pierceLeft: s.bulletPierce, hitEnemies: [], animTimer: 0, animFrame: 0, isFireSplit: false, sessionKills: 0 });
     }
@@ -509,7 +1161,7 @@ export class GameEngine {
       const spawnX = enemyX + Math.cos(splitAngle) * spawnKickbackRadius, spawnY = enemyY + Math.sin(splitAngle) * spawnKickbackRadius;
       const el = document.createElement('img'); el.src = BULLET_ANIMS[0];
       el.style.cssText = `width:${fireBulletSize}px;position:absolute;transform-origin:center;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:9998;`;
-      el.style.left = (spawnX - (fireBulletSize / 2) - s.cameraX) + 'px'; el.style.top = (spawnY - (fireBulletSize / 2) - s.cameraY) + 'px'; el.style.transform = `rotate(${splitAngle}rad)`;
+      el.style.left = Math.round(spawnX - (fireBulletSize / 2) - s.cameraX) + 'px'; el.style.top = Math.round(spawnY - (fireBulletSize / 2) - s.cameraY) + 'px'; el.style.transform = `rotate(${splitAngle}rad)`;
       this.container.appendChild(el);
       s.bullets.push({ id: Math.random().toString(36).substr(2, 9), x: spawnX, y: spawnY, vx: Math.cos(splitAngle) * s.bulletSpeed, vy: Math.sin(splitAngle) * s.bulletSpeed, el, angle: splitAngle, pierceLeft: Math.min(s.bulletPierce, 2), hitEnemies: [], animTimer: 0, animFrame: 0, isFireSplit: true, sessionKills: 0 });
     }
@@ -690,7 +1342,7 @@ export class GameEngine {
       sb.worldX = cx + Math.cos(sb.offset) * orbitRadius;
       sb.worldY = cy + Math.sin(sb.offset) * orbitRadius;
       if (fireshot > 0) { sb.animTimer += dt; if (sb.animTimer >= 200) { sb.animTimer = 0; sb.animFrame = (sb.animFrame + 1) % BULLET_ANIMS.length; if (sb.el) sb.el.src = BULLET_ANIMS[sb.animFrame]; } }
-      if (sb.el) { sb.el.style.left = (sb.worldX - (sb.size / 2) - this.state.cameraX) + 'px'; sb.el.style.top = (sb.worldY - (sb.size / 2) - this.state.cameraY) + 'px'; const bulletFacingAngle = sb.spinDir === 1 ? sb.offset + Math.PI / 2 : sb.offset - Math.PI / 2; sb.el.style.transform = `rotate(${bulletFacingAngle}rad)`; }
+      if (sb.el) { sb.el.style.left = Math.round(sb.worldX - (sb.size / 2) - this.state.cameraX) + 'px'; sb.el.style.top = Math.round(sb.worldY - (sb.size / 2) - this.state.cameraY) + 'px'; const bulletFacingAngle = sb.spinDir === 1 ? sb.offset + Math.PI / 2 : sb.offset - Math.PI / 2; sb.el.style.transform = `rotate(${bulletFacingAngle}rad)`; }
       if (this.isCollision(px, py, PLAYER_HITBOX_SIZE, sb.worldX, sb.worldY, sb.size)) { this.takeDamage(`${enemy.type.name} Shield`); sb.pierceLeft--; if (sb.el) sb.el.style.opacity = Math.max(0, sb.pierceLeft / sb.maxPierce).toString(); if (sb.pierceLeft <= 0) { if (sb.el) sb.el.remove(); enemy.shieldBullets.splice(i, 1); } }
     }
   }
@@ -837,8 +1489,8 @@ export class GameEngine {
           ex.el.src = BOMBER_EXPLOSION_FRAMES[frame];
         }
       }
-      ex.el.style.left = (ex.x - ex.size / 2 - s.cameraX) + 'px';
-      ex.el.style.top = (ex.y - ex.size / 2 - s.cameraY) + 'px';
+      ex.el.style.left = Math.round(ex.x - ex.size / 2 - s.cameraX) + 'px';
+      ex.el.style.top = Math.round(ex.y - ex.size / 2 - s.cameraY) + 'px';
     }
   }
 
@@ -853,8 +1505,8 @@ export class GameEngine {
     const x = px + (Math.random() - 0.5) * 16 - (s.vx * 1.5);
     const y = py + (Math.random() - 0.5) * 16 - (s.vy * 1.5);
     el.style.cssText = `width:${size}px;height:${size}px;position:absolute;left:0;top:0;transform-origin:center;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:300;opacity:0.95;`;
-    const tx = x - size / 2 - s.cameraX;
-    const ty = y - size / 2 - s.cameraY;
+    const tx = Math.round(x - size / 2 - s.cameraX);
+    const ty = Math.round(y - size / 2 - s.cameraY);
     el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
     this.container.appendChild(el);
     s.particles.push({ x, y, size, el, startTime: Date.now(), duration: 500, isFireshot: false });
@@ -867,11 +1519,11 @@ export class GameEngine {
     const el = document.createElement('img');
     el.src = "https://codehs.com/uploads/28fa6fa755aabb395f685d97bd917e86";
     el.style.cssText = `width:${size}px;height:${size}px;position:absolute;left:0;top:0;transform-origin:center;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:300;opacity:0.9;filter:brightness(0.35) saturate(1.8);`;
-    const tx = bx - size / 2 - s.cameraX;
-    const ty = by - size / 2 - s.cameraY;
+    const tx = Math.round(bx - size / 2 - s.cameraX);
+    const ty = Math.round(by - size / 2 - s.cameraY);
     el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
     this.container.appendChild(el);
-    s.particles.push({ x: bx, y: by, size, el, startTime: Date.now(), duration: 500, isFireshot: true });
+    s.particles.push({ x: bx, y: by, size, el, startTime: Date.now(), duration: 250, isFireshot: true });
   }
 
   public updateParticles() {
@@ -889,8 +1541,8 @@ export class GameEngine {
       const opacity = Math.max(0, 0.95 * (1 - ratio));
       p.el.style.opacity = opacity.toString();
       const scale = 1 - ratio * 0.3;
-      const tx = p.x - p.size / 2 - s.cameraX;
-      const ty = p.y - p.size / 2 - s.cameraY;
+      const tx = Math.round(p.x - p.size / 2 - s.cameraX);
+      const ty = Math.round(p.y - p.size / 2 - s.cameraY);
       p.el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
     }
   }
@@ -973,7 +1625,7 @@ export class GameEngine {
         nextShotAt: Date.now() + 1000,
         shootInterval: 1800 + Math.random() * 2200, // FIXED: Deceased shoot rate and matched with original
         hasSplit: false,
-        isClone: true, originalId: originalEnemy.el, cloneAngle: angle, cloneStartX: originalEnemy.x, cloneStartY: originalEnemy.y, cloneSpawnTime: spawnTime, cloneAnimating: true, id: Math.random().toString(36).substr(2, 9), isUnloaded: false, shieldBullets: [], activeShieldSignature: '', animTimer: 0, animFrame: 0
+        isClone: true, originalId: originalEnemy.id, cloneAngle: angle, cloneStartX: originalEnemy.x, cloneStartY: originalEnemy.y, cloneSpawnTime: spawnTime, cloneAnimating: true, id: Math.random().toString(36).substr(2, 9), isUnloaded: false, shieldBullets: [], activeShieldSignature: '', animTimer: 0, animFrame: 0
       });
     });
   }
@@ -981,7 +1633,7 @@ export class GameEngine {
   public damageMagicClones(originalEnemy: Enemy) {
     const s = this.state;
     s.enemies.forEach(clone => {
-      if (clone.isClone && clone.originalId === originalEnemy.el) {
+      if (clone.isClone && clone.originalId === originalEnemy.id) {
         clone.health -= 1;
         clone.lastDamageTime = Date.now();
       }
@@ -1110,7 +1762,7 @@ export class GameEngine {
     s.shopEntranceX = s.x + Math.cos(angle) * distance; s.shopEntranceY = s.y + Math.sin(angle) * distance;
     const el = document.createElement('img'); el.src = DOOR_ANIM_FRAMES[0];
     el.style.cssText = `width:${SHOP_SPRITE_SIZE}px;position:absolute;z-index:500;pointer-events:none;user-select:none;-webkit-user-drag:none;`;
-    el.style.left = (s.shopEntranceX - s.cameraX) + 'px'; el.style.top = (s.shopEntranceY - s.cameraY) + 'px'; this.container.appendChild(el);
+    el.style.left = Math.round(s.shopEntranceX - s.cameraX) + 'px'; el.style.top = Math.round(s.shopEntranceY - s.cameraY) + 'px'; this.container.appendChild(el);
     s.shopEntranceEl = el; s.entranceDoorAnimFrame = 0; s.entranceDoorAnimPlayed = false; s.entranceDoorAnimTimer = 0;
     const arrowEl = document.createElement('img'); arrowEl.src = "https://codehs.com/uploads/47d2aecdb1c143d3e23af2901a76dd7f";
     arrowEl.style.cssText = `width:40px;position:fixed;z-index:100004;pointer-events:none;user-select:none;-webkit-user-drag:none;transform-origin:center;opacity:0;`; this.container.appendChild(arrowEl); s.shopArrowEl = arrowEl;
@@ -1147,8 +1799,8 @@ export class GameEngine {
     titleEl.style.cssText = `position:absolute;font-family:'Press Start 2P',monospace;font-size:${titleFontSize}px;color:#ffcc00;text-shadow:${4 * s.screenScale}px ${4 * s.screenScale}px 0 #000;white-space:nowrap;z-index:10000;pointer-events:none;transform:translate(-50%, -50%);`;
     const titleX = SHOP_AREA_X;
     const titleY = startY - 80 * s.screenScale;
-    titleEl.style.left = (titleX - s.cameraX) + 'px';
-    titleEl.style.top = (titleY - s.cameraY) + 'px';
+    titleEl.style.left = Math.round(titleX - s.cameraX) + 'px';
+    titleEl.style.top = Math.round(titleY - s.cameraY) + 'px';
     this.container.appendChild(titleEl);
     s.shopTitleEl = titleEl;
 
@@ -1267,7 +1919,7 @@ export class GameEngine {
 
   public positionPhysicalShopItems() {
     const s = this.state;
-    s.shopItemEls.forEach(item => { item.el.style.left = (item.x - s.cameraX) + 'px'; item.el.style.top = (item.y - s.cameraY) + 'px'; });
+    s.shopItemEls.forEach(item => { item.el.style.left = Math.round(item.x - s.cameraX) + 'px'; item.el.style.top = Math.round(item.y - s.cameraY) + 'px'; });
     if (s.shopTitleEl) {
       const rows = Math.ceil(ENCHANTMENTS.length / SHOP_ITEM_COLUMNS);
       const scaledHeight = SHOP_ITEM_HEIGHT * s.screenScale;
@@ -1275,8 +1927,8 @@ export class GameEngine {
       const totalHeight = (rows * scaledHeight) + ((rows - 1) * scaledRowGap);
       const startY = SHOP_AREA_Y - (totalHeight / 2) - (35 * s.screenScale);
       const titleY = startY - 80 * s.screenScale;
-      s.shopTitleEl.style.left = (SHOP_AREA_X - s.cameraX) + 'px';
-      s.shopTitleEl.style.top = (titleY - s.cameraY) + 'px';
+      s.shopTitleEl.style.left = Math.round(SHOP_AREA_X - s.cameraX) + 'px';
+      s.shopTitleEl.style.top = Math.round(titleY - s.cameraY) + 'px';
     }
   }
 
@@ -1388,12 +2040,23 @@ export class GameEngine {
     this.stopSound(SHOP_SOUNDS.SHOP_ARROW_BEEP); this.stopSound(SHOP_SOUNDS.SHOP_ENTER);
     this.playingSounds = [];
     if (s.currentMusic) { s.currentMusic.pause(); s.currentMusic = null; }
+    this.biomeCache.clear();
+    this.rawBiomeCache.clear();
+    this.biomeSeedT = Math.random() * 10000;
+    this.biomeSeedM = Math.random() * 10000;
+    this.biomeSeedL = Math.random() * 10000;
     this.emitState();
   }
 
   public startGame() {
     const s = this.state; if (s.gameStarted) return;
-    this.playSound(SOUNDS.BUTTON_CLICK); this.cleanUpOldGameSession(); this.updateActiveMissions(); this.assignShopUnlockMissions();
+    this.playSound(SOUNDS.BUTTON_CLICK); this.cleanUpOldGameSession(); this.generateBiomes();
+    const spawnPos = this.findSafeSpawnPosition();
+    s.x = spawnPos.x;
+    s.y = spawnPos.y;
+    s.cameraX = s.x - window.innerWidth / 2;
+    s.cameraY = s.y - window.innerHeight / 2;
+    this.updateActiveMissions(); this.assignShopUnlockMissions();
     s.gameStarted = true; this.playerEl.style.visibility = 'visible'; this.testBoxEl.style.visibility = 'visible';
     this.playSound(SOUNDS.STARTUP, 0.6);
     setTimeout(() => this.playRandomMusic(), 800);
@@ -1445,13 +2108,63 @@ export class GameEngine {
 
   public skipMission() { const s = this.state; if (!s.devUnlocked) return; this.playSound(SOUNDS.BUTTON_CLICK); s.shopUnlockMissions.forEach(sm => { if (!s.completedMissions.includes(sm.id)) { s.completedMissions.push(sm.id); } }); s.activeMissions = s.activeMissions.filter(m => !s.shopUnlockMissions.some(sm => sm.id === m.id)); s.shopUnlockMissions = []; this.spawnShopEntrance(); }
 
-  public handleKeyDown(e: KeyboardEvent) { const s = this.state; this.resumeMusic(); if (!s.gameStarted || s.isDead || s.showDevPassword) return; if (e.key.toLowerCase() === 'p' || e.key === 'Escape') { this.togglePause(); return; } if (s.isPaused) return; s.keys[e.key] = true; if (e.key === ' ') { this.shootBullet(); e.preventDefault(); } }
+  public handleKeyDown(e: KeyboardEvent) {
+    const s = this.state;
+    this.resumeMusic();
+    if (!s.gameStarted || s.isDead || s.showDevPassword) return;
+    if (e.key.toLowerCase() === 'p' || e.key === 'Escape') { this.togglePause(); return; }
+
+    // Dev Mode tools for water transition alignment offset
+    if (s.devUnlocked) {
+      if (e.key === '[') {
+        const current = parseInt(localStorage.getItem('waterRestOffset') || '3', 10);
+        const next = (current - 1 + 9) % 9;
+        localStorage.setItem('waterRestOffset', next.toString());
+        console.log('Dev: Adjusted waterRestOffset to', next);
+        this.emitState();
+        return;
+      } else if (e.key === ']') {
+        const current = parseInt(localStorage.getItem('waterRestOffset') || '3', 10);
+        const next = (current + 1) % 9;
+        localStorage.setItem('waterRestOffset', next.toString());
+        console.log('Dev: Adjusted waterRestOffset to', next);
+        this.emitState();
+        return;
+      }
+    }
+
+    if (s.isPaused) return;
+    s.keys[e.key] = true;
+    if (e.key === ' ') { this.shootBullet(); e.preventDefault(); }
+  }
   public handleKeyUp(e: KeyboardEvent) { const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.keys[e.key] = false; }
   public handleMouseMove(e: MouseEvent) { const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.mouseX = e.clientX * s.screenScale; s.mouseY = e.clientY * s.screenScale; }
   public handleMouseDown(e: MouseEvent) { if (e.button === 2) { e.preventDefault(); e.stopPropagation(); return; } this.resumeMusic(); const s = this.state; if (!s.gameStarted || s.isPaused || s.isDead || s.showDevPassword) return; s.mouseX = e.clientX * s.screenScale; s.mouseY = e.clientY * s.screenScale; const target = e.target as HTMLElement; if (target.closest('button') || target.closest('input') || target.closest('[data-ui]')) return; e.preventDefault(); this.shootBullet(); }
   public handleContextMenu(e: MouseEvent) { e.preventDefault(); e.stopPropagation(); return false; }
   public preventNativeDrag(e: DragEvent) { const target = e.target as HTMLElement; if (target.closest && target.closest('input')) return; e.preventDefault(); }
-  public preventBrowserZoom(e: any) { const key = (e.key || '').toLowerCase(); const isZoomKey = e.type === 'keydown' && (e.ctrlKey || e.metaKey) && ['+', '=', '-', '_', '0'].includes(key); const isZoomWheel = e.type === 'wheel' && (e.ctrlKey || e.metaKey); const isGesture = e.type && e.type.startsWith('gesture'); if (isZoomKey || isZoomWheel || isGesture) { e.preventDefault(); e.stopPropagation(); } }
+  public preventBrowserZoom(e: any) {
+    const key = (e.key || '').toLowerCase();
+    const isZoomKey = e.type === 'keydown' && (e.ctrlKey || e.metaKey) && ['+', '=', '-', '_', '0'].includes(key);
+    const isZoomWheel = e.type === 'wheel' && (e.ctrlKey || e.metaKey);
+    const isGesture = e.type && e.type.startsWith('gesture');
+    
+    if (isZoomKey || isZoomWheel || isGesture) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (isZoomWheel && this.state.devUnlocked) {
+        if (e.deltaY < 0) {
+          // Zoom in: decrease screenScale (makes the viewport larger/closer)
+          this.state.screenScale = Math.max(0.25, this.state.screenScale - 0.05);
+        } else if (e.deltaY > 0) {
+          // Zoom out: increase screenScale (makes the viewport smaller/further)
+          this.state.screenScale = Math.min(5.0, this.state.screenScale + 0.05);
+        }
+        this.handleResize();
+        this.emitState();
+      }
+    }
+  }
   public handleBlur() { const s = this.state; if (!s.isPaused && s.gameStarted && !s.isDead && !s.showDevPassword) this.togglePause(); }
   public handleResize() {
     this.applyScreenScale();
@@ -1460,40 +2173,40 @@ export class GameEngine {
       const viewWidth = this.getSpawnScreenWidth(), viewHeight = this.getSpawnScreenHeight();
       s.cameraX = s.x - viewWidth / 2;
       s.cameraY = s.y - viewHeight / 2;
-      this.playerEl.style.left = (s.x - s.cameraX) + 'px';
-      this.playerEl.style.top = (s.y - s.cameraY) + 'px';
+      this.playerEl.style.left = Math.round(s.x - s.cameraX) + 'px';
+      this.playerEl.style.top = Math.round(s.y - s.cameraY) + 'px';
       if (s.shopEntranceActive && s.shopEntranceEl) {
-        s.shopEntranceEl.style.left = (s.shopEntranceX - s.cameraX) + 'px';
-        s.shopEntranceEl.style.top = (s.shopEntranceY - s.cameraY) + 'px';
+        s.shopEntranceEl.style.left = Math.round(s.shopEntranceX - s.cameraX) + 'px';
+        s.shopEntranceEl.style.top = Math.round(s.shopEntranceY - s.cameraY) + 'px';
       }
       if (s.inShop && s.shopExitEl) {
-        s.shopExitEl.style.left = (s.shopExitX - s.cameraX) + 'px';
-        s.shopExitEl.style.top = (s.shopExitY - s.cameraY) + 'px';
+        s.shopExitEl.style.left = Math.round(s.shopExitX - s.cameraX) + 'px';
+        s.shopExitEl.style.top = Math.round(s.shopExitY - s.cameraY) + 'px';
       }
       s.enemies.forEach(e => {
         if (e.el) {
           const offset = e.isElite ? (e.eliteOffset || 0) : 0;
-          e.el.style.left = (e.x - offset - s.cameraX) + 'px';
-          e.el.style.top = (e.y - offset - s.cameraY) + 'px';
+          e.el.style.left = Math.round(e.x - offset - s.cameraX) + 'px';
+          e.el.style.top = Math.round(e.y - offset - s.cameraY) + 'px';
         }
       });
       s.bullets.forEach(b => {
         if (b.el) {
-          b.el.style.left = (b.x - (b.size / 2) - s.cameraX) + 'px';
-          b.el.style.top = (b.y - (b.size / 2) - s.cameraY) + 'px';
+          b.el.style.left = Math.round(b.x - (b.size / 2) - s.cameraX) + 'px';
+          b.el.style.top = Math.round(b.y - (b.size / 2) - s.cameraY) + 'px';
         }
       });
       s.enemyBullets.forEach(b => {
         if (b.el) {
-          b.el.style.left = (b.x - (b.size / 2) - s.cameraX) + 'px';
-          b.el.style.top = (b.y - (b.size / 2) - s.cameraY) + 'px';
+          b.el.style.left = Math.round(b.x - (b.size / 2) - s.cameraX) + 'px';
+          b.el.style.top = Math.round(b.y - (b.size / 2) - s.cameraY) + 'px';
         }
       });
       if (s.inShop) {
         s.shopItemEls.forEach(item => {
           if (item.el) {
-            item.el.style.left = (item.x - s.cameraX) + 'px';
-            item.el.style.top = (item.y - s.cameraY) + 'px';
+            item.el.style.left = Math.round(item.x - s.cameraX) + 'px';
+            item.el.style.top = Math.round(item.y - s.cameraY) + 'px';
           }
         });
       }
@@ -1504,13 +2217,19 @@ export class GameEngine {
     const s = this.state; const currentInstant = Date.now(); const perfNow = performance.now(); const dt = perfNow - s.lastFrameTime; s.lastFrameTime = perfNow;
     if (s.gameStarted && !s.isDead && !s.isPaused) { const delta = currentInstant - s.lastTimestamp; if (!s.inShop) s.activePlaytime += delta; if (s.fireshot > 0) { s.playerAnimTimer += dt; if (s.playerAnimTimer >= 250) { s.playerAnimTimer = 0; s.playerAnimFrame = (s.playerAnimFrame + 1) % 4; this.updatePlayerSprite(); } } }
     s.lastTimestamp = currentInstant;
-    if (s.gameStarted) {
-      this.updateExplosions();
-      this.updateParticles();
-    }
-    if (!s.gameStarted || s.isDead || s.isPaused || s.shopFade > 0) { this.animationId = requestAnimationFrame(this.update); return; }
-    this.testBoxEl.style.left = (1200 - s.cameraX) + 'px'; this.testBoxEl.style.top = (400 - s.cameraY) + 'px';
 
+    // Handle early exit for paused, dead, or transitioning states
+    if (!s.gameStarted || s.isDead || s.isPaused || s.shopFade > 0) {
+      if (s.gameStarted) {
+        this.updateExplosions();
+        this.updateParticles();
+      }
+      this.drawBiomes();
+      this.animationId = requestAnimationFrame(this.update);
+      return;
+    }
+
+    // 1. GAMEPLAY SIMULATION / PHYSICS POSITION UPDATES (First, calculate new coordinates)
     if (!s.inShop && !s.postShopSpawnDelay) { const now = Date.now(); if (now - s.lastSpawnTime >= s.nextSpawnInterval) { s.lastSpawnTime = now; s.nextSpawnInterval = this.getSpawnInterval(); this.doSpawn(); } }
     if (s.keys['w'] || s.keys['ArrowUp']) s.vy -= s.acceleration;
     if (s.keys['s'] || s.keys['ArrowDown']) s.vy += s.acceleration;
@@ -1523,21 +2242,30 @@ export class GameEngine {
         this.spawnPlayerParticle();
       }
     }
+
+    // 2. CAMERA POSITION UPDATE (Update camera based on newly simulated positions)
     const viewWidth = this.getSpawnScreenWidth(), viewHeight = this.getSpawnScreenHeight();
     s.cameraX += (s.x - s.cameraX - viewWidth / 2) * 0.1; s.cameraY += (s.y - s.cameraY - viewHeight / 2) * 0.1;
-    this.playerEl.style.left = (s.x - s.cameraX) + 'px'; this.playerEl.style.top = (s.y - s.cameraY) + 'px';
+
+    // 3. VISUAL POSITION UPDATES & RENDERING (Now position everything using the updated camera)
+    this.drawBiomes();
+    this.testBoxEl.style.left = Math.round(1200 - s.cameraX) + 'px'; this.testBoxEl.style.top = Math.round(400 - s.cameraY) + 'px';
+    this.updateExplosions();
+    this.updateParticles();
+
+    this.playerEl.style.left = Math.round(s.x - s.cameraX) + 'px'; this.playerEl.style.top = Math.round(s.y - s.cameraY) + 'px';
     const mouseAng = Math.atan2(s.mouseY - (s.y - s.cameraY + s.centerOffsetY), s.mouseX - (s.x - s.cameraX + s.centerOffsetX));
     this.playerEl.style.transform = `rotate(${mouseAng}rad)`;
     const px = s.x + s.centerOffsetX, py = s.y + s.centerOffsetY;
     if (s.shopEntranceActive && s.shopEntranceEl) {
-      s.shopEntranceEl.style.left = (s.shopEntranceX - s.cameraX) + 'px'; s.shopEntranceEl.style.top = (s.shopEntranceY - s.cameraY) + 'px';
+      s.shopEntranceEl.style.left = Math.round(s.shopEntranceX - s.cameraX) + 'px'; s.shopEntranceEl.style.top = Math.round(s.shopEntranceY - s.cameraY) + 'px';
       const distToDoor = Math.hypot(px - s.shopEntranceX, py - s.shopEntranceY); const openThreshold = 500;
       s.entranceDoorAnimTimer += dt;
       if (s.entranceDoorAnimTimer >= 80) { s.entranceDoorAnimTimer -= 80; if (distToDoor < openThreshold && s.entranceDoorAnimFrame < DOOR_ANIM_FRAMES.length - 1) { s.entranceDoorAnimFrame++; s.shopEntranceEl.src = DOOR_ANIM_FRAMES[s.entranceDoorAnimFrame]; } else if (distToDoor >= openThreshold && s.entranceDoorAnimFrame > 0) { s.entranceDoorAnimFrame--; s.shopEntranceEl.src = DOOR_ANIM_FRAMES[s.entranceDoorAnimFrame]; } }
       if (this.isCollision(px, py, PLAYER_HITBOX_SIZE, s.shopEntranceX, s.shopEntranceY, SHOP_SPRITE_SIZE)) { this.enterShop(); }
     }
     if (s.inShop && s.shopExitEl) {
-      s.shopExitEl.style.left = (s.shopExitX - s.cameraX) + 'px'; s.shopExitEl.style.top = (s.shopExitY - s.cameraY) + 'px';
+      s.shopExitEl.style.left = Math.round(s.shopExitX - s.cameraX) + 'px'; s.shopExitEl.style.top = Math.round(s.shopExitY - s.cameraY) + 'px';
       const exitCenterX = s.shopExitX + SHOP_SPRITE_SIZE / 2, exitCenterY = s.shopExitY + SHOP_SPRITE_SIZE / 2;
       const distToExit = Math.hypot(px - exitCenterX, py - exitCenterY); const exitThreshold = 250;
       s.exitDoorAnimTimer += dt;
@@ -1579,7 +2307,7 @@ export class GameEngine {
       const sb = s.shieldBullets[i]; sb.offset += orbitSpeed * sb.spinDir;
       const orbitRadius = (sb.ring === 'inner') ? 75 : 135; const sbWorldX = px + Math.cos(sb.offset) * orbitRadius, sbWorldY = py + Math.sin(sb.offset) * orbitRadius;
       if (s.fireshot > 0) { sb.animTimer += dt; if (sb.animTimer >= 200) { sb.animTimer = 0; sb.animFrame = (sb.animFrame + 1) % BULLET_ANIMS.length; sb.el.src = BULLET_ANIMS[sb.animFrame]; } } else { if (sb.el.src !== DEFAULT_BULLET_SPRITE) sb.el.src = DEFAULT_BULLET_SPRITE; }
-      sb.el.style.left = (sbWorldX - (sb.size / 2) - this.state.cameraX) + 'px'; sb.el.style.top = (sbWorldY - (sb.size / 2) - this.state.cameraY) + 'px';
+      sb.el.style.left = Math.round(sbWorldX - (sb.size / 2) - this.state.cameraX) + 'px'; sb.el.style.top = Math.round(sbWorldY - (sb.size / 2) - this.state.cameraY) + 'px';
 
       const bulletFacingAngle = (sb.spinDir === 1) ? (sb.offset + Math.PI / 2) : (sb.offset - Math.PI / 2);
       sb.el.style.transform = `rotate(${bulletFacingAngle}rad)`;
@@ -1632,7 +2360,8 @@ export class GameEngine {
       b.x += b.vx;
       b.y += b.vy;
       if (s.fireshot > 0 && s.maxParticles > 0) {
-        const bSpawnChance = (s.maxParticles / 80) * 0.25;
+        // Performance optimization: scale down particle spawn probability when there are many bullets
+        const bSpawnChance = ((s.maxParticles / 80) * 0.12) / Math.max(1, s.bullets.length / 4);
         if (Math.random() < bSpawnChance) {
           this.spawnBulletParticle(b.x, b.y);
         }
@@ -1741,7 +2470,7 @@ export class GameEngine {
         if (b.el.src !== DEFAULT_BULLET_SPRITE) b.el.src = DEFAULT_BULLET_SPRITE;
         b.angle += 0.008 * dt;
       }
-      b.el.style.left = (b.x - (currentSize / 2) - s.cameraX) + 'px'; b.el.style.top = (b.y - (currentSize / 2) - s.cameraY) + 'px'; b.el.style.transform = `rotate(${b.angle}rad)`;
+      b.el.style.left = Math.round(b.x - (currentSize / 2) - s.cameraX) + 'px'; b.el.style.top = Math.round(b.y - (currentSize / 2) - s.cameraY) + 'px'; b.el.style.transform = `rotate(${b.angle}rad)`;
       for (let j = s.enemies.length - 1; j >= 0; j--) {
         const e = s.enemies[j]; if (!e) continue; const eSize = this.getEnemySize(e);
         if (b.hitEnemies.includes(e.id)) continue;
@@ -1784,13 +2513,25 @@ export class GameEngine {
         b.spinAngle += b.spinSpeed * dt;
       }
       const rotVal = b.spinAngle !== undefined ? b.spinAngle : (b.angle || Math.atan2(b.vy, b.vx));
-      b.el.style.left = (b.x - (bSize / 2) - this.state.cameraX) + 'px'; b.el.style.top = (b.y - (bSize / 2) - this.state.cameraY) + 'px'; b.el.style.transform = `rotate(${rotVal}rad)`;
+      b.el.style.left = Math.round(b.x - (bSize / 2) - this.state.cameraX) + 'px'; b.el.style.top = Math.round(b.y - (bSize / 2) - this.state.cameraY) + 'px'; b.el.style.transform = `rotate(${rotVal}rad)`;
       if (b.x < s.cameraX - 200 || b.x > s.cameraX + viewWidth + 200 || b.y < s.cameraY - 200 || b.y > s.cameraY + viewHeight + 200) { b.el.remove(); s.enemyBullets.splice(i, 1); }
     }
 
     for (let i = s.enemies.length - 1; i >= 0; i--) {
       const e = s.enemies[i];
       if (!e) continue;
+
+      // Despawn far away enemies (giving 0 coins) to free up the mob cap
+      const dx = s.x - e.x;
+      const dy = s.y - e.y;
+      const dist = Math.hypot(dx, dy);
+      const despawnDist = Math.max(2200, this.getSpawnScreenWidth() * 1.5);
+      if (dist > despawnDist) {
+        if (e.el) e.el.remove();
+        this.clearEnemyShieldElements(e);
+        s.enemies.splice(i, 1);
+        continue;
+      }
 
       if (e.health <= 0) {
         this._killEnemy(e, i, 'bullet');
@@ -1870,12 +2611,12 @@ export class GameEngine {
             const displaySize = eSize * scale;
             e.el.style.width = displaySize + 'px';
             const offset = (displaySize - eSize) / 2;
-            e.el.style.left = (e.x - offset - s.cameraX) + 'px';
-            e.el.style.top = (e.y - offset - s.cameraY) + 'px';
+            e.el.style.left = Math.round(e.x - offset - s.cameraX) + 'px';
+            e.el.style.top = Math.round(e.y - offset - s.cameraY) + 'px';
           } else {
             e.el.style.width = eSize + 'px';
-            e.el.style.left = (e.x - s.cameraX) + 'px';
-            e.el.style.top = (e.y - s.cameraY) + 'px';
+            e.el.style.left = Math.round(e.x - s.cameraX) + 'px';
+            e.el.style.top = Math.round(e.y - s.cameraY) + 'px';
           }
           const ecx = e.x + eSize / 2;
           const ecy = e.y + eSize / 2;
@@ -1950,11 +2691,11 @@ export class GameEngine {
     }
     if (e.type.name === 'Magic Mob' && !e.isClone) {
       s.enemies.forEach(enemy => {
-        if (enemy.isClone && enemy.originalId === e.el) {
+        if (enemy.isClone && enemy.originalId === e.id) {
           if (enemy.el) enemy.el.remove();
         }
       });
-      s.enemies = s.enemies.filter(enemy => !(enemy.isClone && enemy.originalId === e.el));
+      s.enemies = s.enemies.filter(enemy => !(enemy.isClone && enemy.originalId === e.id));
       if (bullet) { bullet.sessionKills = (bullet.sessionKills || 0) + 1; this.triggerMissionEvent('bullet_multikill', 1, { killCount: bullet.sessionKills }); }
     }
     this.clearEnemyShieldElements(e);
@@ -1998,5 +2739,388 @@ export class GameEngine {
     if (this.state.shopArrowTextEl) this.state.shopArrowTextEl.remove();
     if (this.playerEl) this.playerEl.remove();
     if (this.testBoxEl) this.testBoxEl.remove();
+  }
+
+  public getCachedImage(url: string): HTMLImageElement {
+    if (!this.textureCache[url]) {
+      const img = new Image();
+      img.referrerPolicy = "no-referrer";
+      img.src = url;
+      this.textureCache[url] = img;
+    }
+    return this.textureCache[url];
+  }
+
+  public preloadAllTextures() {
+    // 1. Preload ground textures
+    Object.values(BIOME_TEXTURES.ground).forEach(url => {
+      this.getCachedImage(url);
+    });
+
+    // 2. Preload water animation frames
+    BIOME_TEXTURES.waterAnimation.forEach(url => {
+      this.getCachedImage(url);
+    });
+
+    // 3. Preload all transition overlays
+    Object.values(BIOME_TEXTURES.transitions).forEach(transConfig => {
+      Object.values(transConfig).forEach(val => {
+        if (Array.isArray(val)) {
+          val.forEach(url => this.getCachedImage(url));
+        } else if (typeof val === 'string') {
+          this.getCachedImage(val);
+        }
+      });
+    });
+  }
+
+  private hash2d(x: number, y: number): number {
+    const h = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453123;
+    return h - Math.floor(h);
+  }
+
+  private noise2d(x: number, y: number): number {
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const fx = x - ix;
+    const fy = y - iy;
+
+    const ux = fx * fx * (3.0 - 2.0 * fx);
+    const uy = fy * fy * (3.0 - 2.0 * fy);
+
+    const a = this.hash2d(ix, iy);
+    const b = this.hash2d(ix + 1, iy);
+    const c = this.hash2d(ix, iy + 1);
+    const d = this.hash2d(ix + 1, iy + 1);
+
+    return a * (1 - ux) * (1 - uy) +
+           b * ux * (1 - uy) +
+           c * (1 - ux) * uy +
+           d * ux * uy;
+  }
+
+  private fbm(x: number, y: number, octaves = 3): number {
+    let value = 0.0;
+    let amplitude = 0.5;
+    let frequency = 1.0;
+    for (let i = 0; i < octaves; i++) {
+      value += amplitude * this.noise2d(x * frequency, y * frequency);
+      frequency *= 2.0;
+      amplitude *= 0.5;
+    }
+    return value;
+  }
+
+  public getHostBiomeAt(r: number, c: number): string {
+    const temp = this.fbm(c * 0.005 + this.biomeSeedT, r * 0.005 + this.biomeSeedT, 2);
+    const moist = this.fbm(c * 0.005 + this.biomeSeedM, r * 0.005 + this.biomeSeedM, 2);
+
+    // temp and moist ranges are roughly [0, 0.85]
+    if (temp < 0.18) { // lowered from 0.22 to expand warm/hot biomes
+      return 'snow';
+    } else if (temp < 0.35) { // lowered from 0.42 to expand warm/hot biomes
+      if (moist < 0.30) {
+        return 'stone';
+      } else {
+        return 'forest';
+      }
+    } else if (temp < 0.48) { // lowered from 0.58 to make high temp area even larger
+      if (moist < 0.25) {
+        return 'stone';
+      } else if (moist < 0.55) {
+        return 'grass';
+      } else {
+        return 'forest';
+      }
+    } else { // high temperature (starts at 0.48 instead of 0.58)
+      if (moist < 0.36) { // raised from 0.26 to increase desert size significantly
+        return 'desert';
+      } else if (moist < 0.44) { // lowered from 0.50 to shrink grass and increase magma size significantly
+        return 'grass';
+      } else {
+        return 'magma';
+      }
+    }
+  }
+
+  public getRawBiomeAt(r: number, c: number): string {
+    const cacheKey = `${r}_${c}`;
+    if (this.rawBiomeCache.has(cacheKey)) {
+      return this.rawBiomeCache.get(cacheKey)!;
+    }
+
+    const host = this.getHostBiomeAt(r, c);
+
+    // Lake noise determines if there is an enclosed lake - lake frequency of 0.04 as requested
+    const lakeNoise = this.fbm(c * 0.04 + this.biomeSeedL, r * 0.04 + this.biomeSeedL, 2);
+
+    let result = host;
+    // Lower threshold specifically for snow biome to increase ice lake count and size
+    const lakeThreshold = (host === 'snow') ? 0.52 : 0.62;
+    if (lakeNoise > lakeThreshold) {
+      // Check if neighbors within distance of 2 are also the same host to ensure it's completely enclosed
+      const checkRange = 2;
+      let isEnclosed = true;
+      for (let dr = -checkRange; dr <= checkRange; dr += 2) {
+        for (let dc = -checkRange; dc <= checkRange; dc += 2) {
+          if (dr === 0 && dc === 0) continue;
+          if (this.getHostBiomeAt(r + dr, c + dc) !== host) {
+            isEnclosed = false;
+            break;
+          }
+        }
+        if (!isEnclosed) break;
+      }
+
+      if (isEnclosed) {
+        if (host === 'snow') {
+          result = 'ice';
+        } else if (host === 'magma') {
+          result = 'lava';
+        } else if (host === 'grass' || host === 'forest' || host === 'desert') {
+          result = 'water';
+        }
+      }
+    }
+
+    this.rawBiomeCache.set(cacheKey, result);
+    return result;
+  }
+
+  public getBiomeAt(r: number, c: number): string {
+    const cacheKey = `${r}_${c}`;
+    if (this.biomeCache.has(cacheKey)) {
+      return this.biomeCache.get(cacheKey)!;
+    }
+
+    // To prevent 3 or more biomes from intersecting in any grid, and to ensure a minimum biome size,
+    // we resolve biomes at the aligned 4x4 block level.
+    const br = Math.floor(r / 4) * 4;
+    const bc = Math.floor(c / 4) * 4;
+
+    const counts: Record<string, number> = {};
+    for (let dr = 0; dr < 4; dr++) {
+      for (let dc = 0; dc < 4; dc++) {
+        const b = this.getRawBiomeAt(br + dr, bc + dc);
+        counts[b] = (counts[b] || 0) + 1;
+      }
+    }
+
+    const uniqueBiomes = Object.keys(counts);
+
+    let resolved: string;
+    if (uniqueBiomes.length <= 2) {
+      resolved = this.getRawBiomeAt(r, c);
+    } else {
+      // Sort by frequency descending, then alphabetically for determinism
+      const sortedBiomes = uniqueBiomes.sort((a, b) => {
+        if (counts[b] !== counts[a]) {
+          return counts[b] - counts[a];
+        }
+        return a.localeCompare(b);
+      });
+
+      const allowed = new Set([sortedBiomes[0], sortedBiomes[1]]);
+      const raw = this.getRawBiomeAt(r, c);
+
+      if (allowed.has(raw)) {
+        resolved = raw;
+      } else {
+        resolved = sortedBiomes[0];
+      }
+    }
+
+    this.biomeCache.set(cacheKey, resolved);
+    return resolved;
+  }
+
+  public findSafeSpawnPosition(): { x: number; y: number } {
+    // Start searching from tile near (900, 400)
+    const startTileC = Math.floor(900 / this.tileSize);
+    const startTileR = Math.floor(400 / this.tileSize);
+
+    // Spiral / search outwards
+    for (let radius = 0; radius < 100; radius++) {
+      for (let dr = -radius; dr <= radius; dr++) {
+        for (let dc = -radius; dc <= radius; dc++) {
+          if (Math.abs(dr) !== radius && Math.abs(dc) !== radius) continue;
+          const r = startTileR + dr;
+          const c = startTileC + dc;
+          const biome = this.getBiomeAt(r, c);
+          if (biome === 'grass' || biome === 'forest') {
+            return {
+              x: c * this.tileSize + this.tileSize / 2,
+              y: r * this.tileSize + this.tileSize / 2
+            };
+          }
+        }
+      }
+    }
+    return { x: 900, y: 400 };
+  }
+
+  public generateBiomes() {
+    this.biomeCache.clear();
+    this.rawBiomeCache.clear();
+    this.biomeSeedT = Math.random() * 10000;
+    this.biomeSeedM = Math.random() * 10000;
+    this.biomeSeedL = Math.random() * 10000;
+  }
+
+  public getTransitionOverlay(r: number, c: number, A: string, frame: number): { url: string; anim: boolean } | null {
+    // Check neighbors for any overlay biome B that A has a transition to
+    const neighbors = [
+      { dr: -1, dc: 0 },  // Top
+      { dr: 1, dc: 0 },   // Bottom
+      { dr: 0, dc: -1 },  // Left
+      { dr: 0, dc: 1 },   // Right
+      { dr: -1, dc: -1 }, // Top-Left
+      { dr: -1, dc: 1 },  // Top-Right
+      { dr: 1, dc: -1 },  // Bottom-Left
+      { dr: 1, dc: 1 }    // Bottom-Right
+    ];
+
+    const getTile = (row: number, col: number) => {
+      return this.getBiomeAt(row, col);
+    };
+
+    // Find if there is a neighbor B that has an A_B transition
+    let targetB = '';
+    let transConfig: any = null;
+
+    for (const n of neighbors) {
+      const b = getTile(r + n.dr, c + n.dc);
+      if (!b || b === A) continue;
+      
+      let key = `${A}_${b}`;
+      let config = BIOME_TEXTURES.transitions[key];
+
+      // Fallback for water transition if direct A_water is not defined (e.g., stone_water, snow_water)
+      if (!config && b === 'water') {
+        config = BIOME_TEXTURES.transitions['grass_water'];
+        key = `grass_water`;
+      }
+
+      // Fallback for lava transition if direct A_lava is not defined
+      if (!config && b === 'lava') {
+        config = BIOME_TEXTURES.transitions['magma_lava'];
+        key = `magma_lava`;
+      }
+
+      // Fallback for ice transition if direct A_ice is not defined
+      if (!config && b === 'ice') {
+        config = BIOME_TEXTURES.transitions['snow_ice'];
+        key = `snow_ice`;
+      }
+
+      if (config) {
+        targetB = b;
+        transConfig = config;
+        break; // Only one transition type can exist per tile due to boundary layout
+      }
+    }
+
+    if (!transConfig || !targetB) return null;
+
+    // Determine 12-way transition key - inverted because asset sprite definitions are the opposite of the grid neighbor check
+    const t = getTile(r - 1, c) === targetB;
+    const b = getTile(r + 1, c) === targetB;
+    const l = getTile(r, c - 1) === targetB;
+    const r_ = getTile(r, c + 1) === targetB;
+
+    let subKey = '';
+
+    // 1. Double cardinal (inner corners) - Inverted to match asset orientation
+    if (t && l) subKey = 'innerBottomRight';
+    else if (t && r_) subKey = 'innerBottomLeft';
+    else if (b && l) subKey = 'innerTopRight';
+    else if (b && r_) subKey = 'innerTopLeft';
+    // 2. Single cardinal (edges) - Inverted to match asset orientation
+    else if (t) subKey = 'bottom';
+    else if (b) subKey = 'top';
+    else if (l) subKey = 'right';
+    else if (r_) subKey = 'left';
+    // 3. Diagonal (outer corners) - Inverted to match asset orientation
+    else {
+      const tl = getTile(r - 1, c - 1) === targetB;
+      const tr = getTile(r - 1, c + 1) === targetB;
+      const bl = getTile(r + 1, c - 1) === targetB;
+      const br = getTile(r + 1, c + 1) === targetB;
+
+      if (tl) subKey = 'outerBottomRight';
+      else if (tr) subKey = 'outerBottomLeft';
+      else if (bl) subKey = 'outerTopRight';
+      else if (br) subKey = 'outerTopLeft';
+    }
+
+    if (!subKey || !transConfig[subKey]) return null;
+
+    const val = transConfig[subKey];
+    if (Array.isArray(val)) {
+      // Animated water transition: index frame based on the precomputed drawBiomes frame and global offsets
+      const waterAnimOffset = this.state.waterAnimOffset;
+      const waterRestOffset = parseInt(localStorage.getItem('waterRestOffset') || '3', 10);
+      const isSide = subKey === 'left' || subKey === 'right';
+      const offset = isSide ? waterAnimOffset : (waterAnimOffset + waterRestOffset);
+      const targetFrame = (frame + offset) % val.length;
+      return { url: val[targetFrame], anim: true };
+    } else {
+      return { url: val as string, anim: false };
+    }
+  }
+
+  public drawBiomes() {
+    if (!this.bgCtx || !this.bgCanvas) return;
+    const s = this.state;
+    const ctx = this.bgCtx;
+    const canvas = this.bgCanvas;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const cameraX = Math.round(s.cameraX);
+    const cameraY = Math.round(s.cameraY);
+    const viewWidth = canvas.width;
+    const viewHeight = canvas.height;
+
+    const startCol = Math.floor(cameraX / this.tileSize);
+    const endCol = Math.floor((cameraX + viewWidth) / this.tileSize);
+    const startRow = Math.floor(cameraY / this.tileSize);
+    const endRow = Math.floor((cameraY + viewHeight) / this.tileSize);
+
+    const frame = Math.floor(Date.now() / 75) % 9;
+
+    for (let r = startRow; r <= endRow; r++) {
+      for (let c = startCol; c <= endCol; c++) {
+        const tileType = this.getBiomeAt(r, c);
+        
+        let imgUrl = BIOME_TEXTURES.ground[tileType as keyof typeof BIOME_TEXTURES.ground];
+        
+        // Animated water frames - synchronized with frame offset
+        if (tileType === 'water') {
+          const waterFrame = (frame + s.waterAnimOffset) % 9;
+          imgUrl = BIOME_TEXTURES.waterAnimation[waterFrame];
+        }
+
+        if (imgUrl) {
+          const img = this.getCachedImage(imgUrl);
+          if (img.complete && img.naturalWidth !== 0) {
+            const drawX = c * this.tileSize - cameraX;
+            const drawY = r * this.tileSize - cameraY;
+            ctx.drawImage(img, drawX, drawY, this.tileSize, this.tileSize);
+          }
+        }
+
+        // Animated or static transition overlays
+        const overlay = this.getTransitionOverlay(r, c, tileType, frame);
+        if (overlay) {
+          const img = this.getCachedImage(overlay.url);
+          if (img.complete && img.naturalWidth !== 0) {
+            const drawX = c * this.tileSize - cameraX;
+            const drawY = r * this.tileSize - cameraY;
+            ctx.drawImage(img, drawX, drawY, this.tileSize, this.tileSize);
+          }
+        }
+      }
+    }
   }
 }

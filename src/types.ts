@@ -173,6 +173,7 @@ export interface GameState {
   shopMusicVolume: number;
   sfxVolume: number;
   maxParticles: number;
+  waterAnimOffset: number;
   deathMessage: string;
   scoreMessage: string;
   hitFlash: boolean;
@@ -428,11 +429,11 @@ export const ENEMY_TYPES: EnemyType[] = [
   { name: "Basic Mob", speed: 2.5, health: 1, sprite: "https://codehs.com/uploads/c1f80496c09b22885b7c5363c5a39f61", unlock: 0, size: 70, weight: 50, weightGrowth: 4, fireRate: 0, coins: 1 },
   { name: "Fast Mob", speed: 5, health: 1, sprite: "https://codehs.com/uploads/f90e57af5395807dbe4331e547933f97", unlock: 20000, size: 45, weight: 6, weightGrowth: 15, fireRate: 0, coins: 2 },
   { name: "Big Mob", speed: 1.8, health: 3, sprite: "https://codehs.com/uploads/fb3ecf8b15c243670ee79c2f5fc4a1ee", unlock: 20000, size: 80, weight: 15, weightGrowth: 15, fireRate: 0, coins: 3 },
-  // Bomber Mob: Introduced at 25s, decreased spawn rate and weight growth
-  { name: "Bomber Mob", speed: 3, health: 5, sprite: BOMBER_SPRITES[0], unlock: 25000, size: 55, weight: 8, weightGrowth: 6, fireRate: 0, coins: 15, isBomber: true },
+  // Bomber Mob: Introduced at 35s, decreased spawn rate and weight growth
+  { name: "Bomber Mob", speed: 3, health: 5, sprite: BOMBER_SPRITES[0], unlock: 35000, size: 55, weight: 4, weightGrowth: 3, fireRate: 0, coins: 15, isBomber: true },
   { name: "Beefy Mob", speed: 1.5, health: 50, sprite: "https://codehs.com/uploads/552b9a6928e6fc4ec63afdb3f001ad65", unlock: 55000, size: 100, weight: 1, weightGrowth: 8, fireRate: 0, coins: 50 },
-  // FIXED Shooter Mob: Moderated spawn rate and introduced a bit later (60s)
-  { name: "Shooter Mob", speed: 3, health: 10, sprite: "https://codehs.com/uploads/874cb3f4442820a144faf789633c16a9", bullet: SHOOTER_BULLET_SPRITE, unlock: 60000, size: 70, weight: 2.2, weightGrowth: 6, fireRate: 10, coins: 20, isShooter: true, shooterPattern: "parallel" },
+  // FIXED Shooter Mob: Moderated spawn rate and introduced a bit later (75s)
+  { name: "Shooter Mob", speed: 3, health: 10, sprite: "https://codehs.com/uploads/874cb3f4442820a144faf789633c16a9", bullet: SHOOTER_BULLET_SPRITE, unlock: 75000, size: 70, weight: 1.5, weightGrowth: 3, fireRate: 10, coins: 20, isShooter: true, shooterPattern: "parallel" },
   // FIXED Magic Mob: Health set to 7 lives
   { name: "Magic Mob", speed: 2.2, health: 7, sprite: "https://codehs.com/uploads/819a6f4f283715719dd1712ef1854afd", unlock: 75000, size: 70, weight: 2, weightGrowth: 10, fireRate: 2, isShooter: true, coins: 15 },
   // FIXED Armored Mob: Increased spawn rate and introduced faster

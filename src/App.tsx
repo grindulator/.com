@@ -19,6 +19,7 @@ export default function App() {
     shopMusicVolume: 30,
     sfxVolume: 50,
     maxParticles: 35,
+    waterAnimOffset: 0,
     deathMessage: "",
     scoreMessage: "",
     hitFlash: false,
